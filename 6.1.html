@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modul 06: IoT Relay Control</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html,
+      body {
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-code {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .code-block-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      /* STYLE EDITOR TEMA CERAH & HOVER KONTRAS */
+      .code-block-item {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+      }
+      .code-block-item:hover {
+        background-color: #e0e7ff !important;
+        border-left-color: #818cf8;
+      }
+      .code-block-item.active-block {
+        background-color: #eef2ff !important;
+        border-left-color: #4f46e5 !important;
+        box-shadow: inset 0 0 0 1px #c7d2fe;
+      }
+
+      .rtdb-row {
+        transition: all 0.2s ease;
+      }
+      .rtdb-row.active {
+        background: #e0e7ff;
+        border-color: #6366f1;
+      }
+
+      .status-dot {
+        animation: statusPulse 2s infinite;
+      }
+
+      span.line {
+        display: block;
+        line-height: 0.1;
+      }
+
+      span.line::before {
+        counter-increment: line;
+        content: counter(line);
+        display: inline-block;
+        width: 2.2rem;
+        margin-right: 1rem;
+        color: #94a3b8;
+        text-align: right;
+        border-right: 1px solid #e2e8f0;
+        padding-right: 0.5rem;
+        user-select: none;
+      }
+
+      @keyframes statusPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+        }
+      }
+
+      .browser-window {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border: 1px solid #cbd5e1;
+      }
+      .browser-header {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      .browser-tab {
+        background: #ffffff;
+        color: #0f172a;
+        padding: 4px 12px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        border: 1px solid #e2e8f0;
+        border-bottom: none;
+      }
+      .browser-address-bar {
+        background: #ffffff;
+        color: #334155;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        border: 1px solid #cbd5e1;
+      }
+      .browser-viewport {
+        background-color: #ffffff;
+        min-height: 160px;
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .browser-viewport h1 {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 28px;
+        font-weight: bold;
+        color: #000000;
+        margin: 0;
+      }
+      .browser-viewport button {
+        font-family: Arial, sans-serif;
+        font-size: 13.33px;
+        padding: 2px 6px;
+        border: 1px solid #767676;
+        border-radius: 2px;
+        background-color: #efefef;
+        cursor: pointer;
+      }
+      .browser-viewport button:hover {
+        background-color: #e5e5e5;
+      }
+      .browser-viewport p {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 16px;
+        margin: 0;
+      }
+    </style>
+  </head>
+
+  <body
+    class="min-h-screen bg-slate-50 text-slate-800 antialiased overflow-x-hidden"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Modul Internet of
+          Things
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+      <!-- HEADER -->
+      <header class="mb-6">
+        <div
+          class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-slate-200 pb-4"
+        >
+          <div>
+            <div
+              class="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-1"
+            >
+              PANDUAN PRAKTIS
+            </div>
+            <h1
+              class="font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+            >
+              Mengontrol Relay / LED Realtime Melalui Web
+            </h1>
+          </div>
+          <div
+            class="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1.5 w-fit"
+          >
+            <span
+              class="w-2.5 h-2.5 rounded-full bg-emerald-500 status-dot"
+            ></span>
+            Koneksi Database Aktif
+          </div>
+        </div>
+      </header>
+
+      <!-- SEKSI INTERAKTIF DATABASE & OUTPUT WEB -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 w-full">
+        <!-- 1. DATABASE SIMULATOR -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3"
+        >
+          <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <i class="ri-database-2-fill text-indigo-600 text-lg"></i>
+            <h2 class="font-display font-bold text-base text-slate-900">
+              1. Firebase Realtime Database
+            </h2>
+          </div>
+
+          <div
+            class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50"
+          >
+            <div class="p-3 bg-white border-b border-slate-200">
+              <div class="font-mono text-[11px] text-slate-400 truncate">
+                https://latihaniot-default-rtdb.firebaseio.com/
+              </div>
+            </div>
+
+            <div class="p-4 bg-white">
+              <div
+                class="flex items-center gap-2 text-xs font-mono font-bold text-slate-800 mb-2"
+              >
+                <i class="ri-arrow-down-s-line text-slate-500"></i>
+                <span>relay</span>
+              </div>
+
+              <!-- Item Realtime DB -->
+              <div class="ml-4 border-l border-slate-200 pl-3">
+                <div
+                  class="px-3 py-2.5 rounded-lg border border-slate-200 flex items-center justify-between text-xs bg-slate-50"
+                >
+                  <span class="font-mono text-slate-700">└─ button1:</span>
+                  <span
+                    id="rtdbValueDisplay"
+                    class="font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded"
+                    >"OFF"</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-[11px] text-indigo-600 font-medium">
+            * Klik tombol <b>Btn ON</b> atau <b>Btn OFF</b> di area simulasi web
+            untuk memperbarui data secara langsung!
+          </p>
+        </div>
+
+        <!-- 2. HASIL OUTPUT BROWSER -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3"
+        >
+          <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <i class="ri-window-fill text-indigo-600 text-lg"></i>
+            <h2 class="font-display font-bold text-base text-slate-900">
+              2. Hasil Tampilan Web (Output)
+            </h2>
+          </div>
+
+          <div class="browser-window">
+            <div class="browser-header">
+              <div class="flex items-center justify-between">
+                <div class="browser-tab">
+                  <i class="ri-global-line text-slate-400"></i>
+                  <span>index.html</span>
+                </div>
+              </div>
+              <div class="browser-address-bar">
+                <i class="ri-refresh-line text-slate-400"></i>
+                <span class="text-slate-500 truncate font-mono text-[10px]"
+                  >http://127.0.0.1:5500/index.html</span
+                >
+              </div>
+            </div>
+
+            <!-- TAMPILAN VIEWPORT WEB PERSIS KODE USER -->
+            <div class="browser-viewport">
+              <h1>Relay 1</h1>
+              <div class="flex gap-1.5">
+                <button id="simBtnOn" onclick="simulasiClick('ON')">
+                  Btn ON
+                </button>
+                <button id="simBtnOff" onclick="simulasiClick('OFF')">
+                  Btn OFF
+                </button>
+              </div>
+              <p>Status Relay 1: <span id="simStatus">OFF</span></p>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 italic">
+            * Menekan tombol akan mengirim status ("ON"/"OFF") ke Firebase dan
+            memperbarui label status secara otomatis.
+          </p>
+        </div>
+      </section>
+
+      <!-- SEKSI PROGRAM KODE UTUH (TEMA CERAH & HOVER KONTRAS) -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 mb-8 shadow-sm space-y-4"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3"
+        >
+          <div class="flex items-center gap-2">
+            <i class="ri-code-box-fill text-indigo-600 text-xl"></i>
+            <h2 class="font-display font-bold text-lg text-slate-900">
+              3. Kode Program Utuh (`index.html`)
+            </h2>
+          </div>
+          <button
+            onclick="copyAllCode(event)"
+            class="hover:bg-indigo-50 bg-slate-100 text-indigo-700 border-indigo-200 hover:border-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition shadow-sm cursor-pointer"
+          >
+            <i class="ri-file-copy-line text-indigo-600"></i> Salin Semua Kode
+          </button>
+        </div>
+
+        <!-- EDITOR UTAMA TEMA CERAH (LIGHT EDITOR) -->
+        <div
+          class="bg-slate-50 rounded-xl border border-slate-300 overflow-hidden shadow-sm"
+        >
+          <!-- HEADER EDITOR -->
+          <div
+            class="bg-slate-200/80 px-4 py-2.5 border-b border-slate-300 flex items-center justify-between text-xs text-slate-700 font-mono"
+          >
+            <div class="flex items-center gap-2">
+              <span
+                class="w-3 h-3 rounded-full bg-rose-400 inline-block border border-rose-500/30"
+              ></span>
+              <span
+                class="w-3 h-3 rounded-full bg-amber-400 inline-block border border-amber-500/30"
+              ></span>
+              <span
+                class="w-3 h-3 rounded-full bg-emerald-400 inline-block border border-emerald-500/30"
+              ></span>
+              <span class="ml-2 font-bold text-slate-800">index.html</span>
+            </div>
+            <span
+              class="text-[11px] text-slate-500 font-sans font-medium hidden sm:inline"
+              >HTML & JavaScript</span
+            >
+          </div>
+
+          <div class="p-3 space-y-1.5 bg-slate-50">
+            <!-- BLOK 1: STRUKTUR HTML -->
+            <div
+              class="code-block-item active-block p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-amber-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-code-s-slash-line"></i> // BLOK 1: Elemen Tombol
+                dan Status Web
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              ><span class="text-slate-400 font-semibold">&lt;!DOCTYPE html&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;html&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;head&gt;</span>
+    <span class="text-indigo-700 font-semibold">&lt;title&gt;</span><span class="text-slate-800">BUTTON</span><span class="text-indigo-700 font-semibold">&lt;/title&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;/head&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;body&gt;</span>
+    <span class="text-indigo-700 font-semibold">&lt;h1&gt;</span><span class="text-slate-800">Relay 1</span><span class="text-indigo-700 font-semibold">&lt;/h1&gt;</span>
+    <span class="text-amber-800 font-bold bg-amber-100/70 px-1 rounded">&lt;button id="button1_on"&gt;Btn ON&lt;/button&gt;</span>
+    <span class="text-amber-800 font-bold bg-amber-100/70 px-1 rounded">&lt;button id="button1_off"&gt;Btn OFF&lt;/button&gt;</span>
+    <span class="text-amber-800 font-bold bg-amber-100/70 px-1 rounded">&lt;p&gt;Status Relay 1: &lt;span id="status_button1"&gt;OFF&lt;/span&gt;&lt;/p&gt;</span></pre>
+            </div>
+
+            <!-- BLOK 2: IMPORT FIREBASE -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-indigo-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-download-cloud-line"></i> // BLOK 2: Mengambil
+                Library Firebase SDK
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >    <span class="text-indigo-700 font-semibold">&lt;script type="module"&gt;</span>
+      <span class="text-purple-700 font-bold">import</span> { initializeApp } <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"</span>;
+      <span class="text-purple-700 font-bold">import</span> { getDatabase, ref, set, onValue } <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"</span>;</pre>
+            </div>
+
+            <!-- BLOK 3: CONFIG -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-cyan-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-settings-4-line"></i> // BLOK 3: Pengaturan
+                Kredensial Firebase
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >      <span class="text-slate-400 italic">// Ganti isi API_KEY dan databaseURL sesuai proyek Firebase kamu</span>
+      <span class="text-purple-700 font-bold">const</span> firebaseConfig = {
+        apiKey: <span class="text-emerald-700 font-semibold">"........"</span>,
+        databaseURL: <span class="text-emerald-700 font-semibold">"........"</span>,
+        projectId: <span class="text-emerald-700 font-semibold">"........"</span>
+      };
+
+      <span class="text-slate-400 italic">// Menghubungkan aplikasi web ke Firebase</span>
+      <span class="text-purple-700 font-bold">const</span> app = initializeApp(firebaseConfig);
+      <span class="text-purple-700 font-bold">const</span> db = getDatabase(app);</pre>
+            </div>
+
+            <!-- BLOK 4: LOGIKA KONTROL & LISTENER -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-emerald-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-toggle-line"></i> // BLOK 4: Mengirim Perintah &
+                Mendengarkan Perubahan
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >      <span class="text-slate-400 italic">// 1. Referensi jalur data relay di database</span>
+      <span class="text-purple-700 font-bold">const</span> relayRef = ref(db, <span class="text-emerald-700 font-bold">"relay/button1"</span>);
+
+      <span class="text-slate-400 italic">// 2. Ambil elemen tombol &amp; span status dari DOM</span>
+      <span class="text-purple-700 font-bold">const</span> btnOn = document.getElementById(<span class="text-emerald-700 font-bold">"button1_on"</span>);
+      <span class="text-purple-700 font-bold">const</span> btnOff = document.getElementById(<span class="text-emerald-700 font-bold">"button1_off"</span>);
+      <span class="text-purple-700 font-bold">const</span> statusText = document.getElementById(<span class="text-emerald-700 font-bold">"status_button1"</span>);
+
+      <span class="text-slate-400 italic">// 3. Event Listener Klik Tombol ON (Kirim "ON" ke Firebase)</span>
+      btnOn.addEventListener(<span class="text-emerald-700 font-bold">"click"</span>, () =&gt; {
+        set(relayRef, <span class="text-emerald-700 font-bold">"ON"</span>);
+      });
+
+      <span class="text-slate-400 italic">// 4. Event Listener Klik Tombol OFF (Kirim "OFF" ke Firebase)</span>
+      btnOff.addEventListener(<span class="text-emerald-700 font-bold">"click"</span>, () =&gt; {
+        set(relayRef, <span class="text-emerald-700 font-bold">"OFF"</span>);
+      });
+
+      <span class="text-slate-400 italic">// 5. Update tampilan status secara realtime setiap data berubah</span>
+      onValue(relayRef, (snapshot) =&gt; {
+        <span class="text-purple-700 font-bold">const</span> status = snapshot.val();
+        statusText.innerText = status ? status : <span class="text-emerald-700 font-bold">"OFF"</span>;
+      });</pre>
+            </div>
+
+            <!-- BLOK 5: PENUTUP -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-slate-500 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-brackets-line"></i> // BLOK 5: Penutup Tag
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >    <span class="text-indigo-700 font-semibold">&lt;/script&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;/body&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;/html&gt;</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEKSI MATERI RINGKAS (COLLAPSIBLE / DEFAULT HIDDEN) -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4 mb-8"
+      >
+        <!-- HEADER TOMBOL TOGGLE -->
+        <button
+          type="button"
+          onclick="toggleMateri()"
+          class="w-full flex items-center justify-between border-b border-slate-100 pb-3 text-left focus:outline-none group cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <i class="ri-book-read-fill text-indigo-600 text-xl"></i>
+            <h2
+              class="font-display font-bold text-lg text-slate-900 group-hover:text-indigo-600 transition"
+            >
+              Penjelasan Kode & Fungsi Utama Firebase SDK Kontrol
+            </h2>
+          </div>
+          <div
+            class="flex items-center gap-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100"
+          >
+            <span id="toggleText">Tampilkan</span>
+            <i
+              id="toggleIcon"
+              class="ri-arrow-down-s-line text-base transition-transform duration-300"
+            ></i>
+          </div>
+        </button>
+
+        <!-- KONTAINER MATERI (DEFAULT HIDDEN) -->
+        <div
+          id="materiContent"
+          class="hidden space-y-4 transition-all duration-300"
+        >
+          <div
+            class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4 text-xs text-indigo-950 leading-relaxed space-y-1.5"
+          >
+            <div
+              class="font-bold text-indigo-700 flex items-center gap-1.5 text-sm"
+            >
+              <i class="ri-information-fill"></i> Konsep Menulis Data (`set`)
+              pada Firebase JS SDK
+            </div>
+            <p>
+              Berbeda dengan membaca data yang menggunakan
+              <code>onValue</code>, fungsi <code>set()</code> digunakan untuk
+              <strong>mengirim/menulis ulang</strong> data pada jalur (path)
+              tertentu di Firebase. Ketika tombol diklik, pesan string
+              <code>"ON"</code> atau <code>"OFF"</code> dikirim langsung ke
+              cloud.
+            </p>
+          </div>
+
+          <!-- Tabel Fungsi Terstruktur -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr
+                  class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200"
+                >
+                  <th class="p-3 w-1/3">Kategori / Baris Kode</th>
+                  <th class="p-3">Penjelasan Fungsi & Perannya</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 font-mono text-xs">
+                <!-- KATEGORI 1: STRUKTUR HTML -->
+                <tr class="bg-slate-50/80">
+                  <td
+                    colspan="2"
+                    class="p-2.5 font-sans font-bold text-indigo-800 text-[11px] uppercase tracking-wider bg-indigo-50/40"
+                  >
+                    1. Elemen Tampilan Web (HTML)
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-amber-700">
+                    &lt;button id="button1_on"&gt;Btn ON&lt;/button&gt;
+                  </td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Tombol kontrol untuk memicu perintah menyalakan relay/LED.
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-amber-700">
+                    &lt;span id="status_button1"&gt;OFF&lt;/span&gt;
+                  </td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Kontainer penampung teks status relay saat ini yang akan
+                    diperbarui secara otomatis.
+                  </td>
+                </tr>
+
+                <!-- KATEGORI 2: FUNGSI FIREBASE SET -->
+                <tr class="bg-slate-50/80">
+                  <td
+                    colspan="2"
+                    class="p-2.5 font-sans font-bold text-indigo-800 text-[11px] uppercase tracking-wider bg-indigo-50/40"
+                  >
+                    2. Perintah Mengubah Data Firebase
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-indigo-600">
+                    set(relayRef, "ON")
+                  </td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Fungsi Firebase SDK untuk **menulis/mengganti** data di node
+                    <code
+                      class="bg-slate-100 px-1 py-0.5 rounded border border-slate-200 text-emerald-700 font-bold"
+                      >"relay/button1"</code
+                    >
+                    menjadi string
+                    <code
+                      class="bg-slate-100 px-1 py-0.5 rounded border border-slate-200 font-bold text-indigo-600"
+                      >"ON"</code
+                    >.
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-indigo-600">
+                    addEventListener("click", callback)
+                  </td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Event listener bawaan JavaScript untuk mendeteksi kapan
+                    elemen tombol diklik oleh pengguna.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEKSI RANGKAIAN HARDWARE & SKEMATIK -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4 mb-8"
+      >
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+          <i class="ri-cpu-line text-indigo-600 text-xl"></i>
+          <h2 class="font-display font-bold text-lg text-slate-900">
+            Skematik Hardware & Pengabelan ESP32 + Modul Relay / LED
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <!-- Gambar Skematik -->
+          <div
+            class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center"
+          >
+            <img
+              src="img/relay.png"
+              alt="Rangkaian ESP32 dan Modul Relay / LED"
+              class="max-h-72 object-contain rounded-lg hover:scale-105 transition-transform duration-300"
+            />
+            <span class="text-[11px] text-slate-500 mt-2 font-mono"
+              >Gambar: Rangkaian ESP32 & Modul Relay (GPIO 5)</span
+            >
+          </div>
+
+          <!-- Tabel Pinout -->
+          <div class="space-y-3">
+            <h3
+              class="font-semibold text-sm text-slate-800 flex items-center gap-1.5"
+            >
+              <i class="ri-links-line text-indigo-600"></i> Tabel Koneksi
+              Pinout:
+            </h3>
+            <div class="overflow-hidden border border-slate-200 rounded-xl">
+              <table class="w-full text-left text-xs">
+                <thead
+                  class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200"
+                >
+                  <tr>
+                    <th class="p-2.5">Pin Modul Relay</th>
+                    <th class="p-2.5">Pin ESP32 DevKit</th>
+                    <th class="p-2.5">Keterangan</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 font-mono">
+                  <tr>
+                    <td class="p-2.5 font-bold text-rose-600">VCC / (+)</td>
+                    <td class="p-2.5 font-bold text-slate-800">5V / VIN</td>
+                    <td class="p-2.5 text-slate-500 font-sans">
+                      Daya Relay (5V)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-bold text-blue-600">IN / Signal</td>
+                    <td class="p-2.5 font-bold text-indigo-600">GPIO 5 (G5)</td>
+                    <td class="p-2.5 text-slate-500 font-sans">
+                      Sinyal Kontrol Pemicu
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-bold text-slate-800">GND / (-)</td>
+                    <td class="p-2.5 font-bold text-slate-800">GND</td>
+                    <td class="p-2.5 text-slate-500 font-sans">
+                      Ground / Nol Volt
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEKSI PROGRAM ARDUINO IDE ESP32 -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 mb-8 shadow-sm space-y-4"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3"
+        >
+          <div class="flex items-center gap-2">
+            <i class="ri-code-s-slash-fill text-teal-600 text-xl"></i>
+            <h2 class="font-display font-bold text-lg text-slate-900">
+              Kode Program ESP32 Arduino IDE (`relay_firebase.ino`)
+            </h2>
+          </div>
+          <button
+            onclick="copyArduinoCode(event)"
+            class="hover:bg-teal-50 bg-slate-100 text-teal-700 border-teal-200 hover:border-teal-300 text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition shadow-sm cursor-pointer"
+          >
+            <i class="ri-file-copy-line text-teal-600"></i> Salin Kode Arduino
+          </button>
+        </div>
+
+        <!-- EDITOR ARDUINO IDE -->
+        <div
+          class="rounded-xl border border-slate-300 overflow-hidden shadow-sm bg-[#FFFFF8]"
+        >
+          <div
+            class="bg-[#008184] px-4 py-2.5 flex items-center justify-between text-xs text-white font-mono"
+          >
+            <div class="flex items-center gap-2">
+              <i class="ri-cpu-line text-teal-200"></i>
+              <span class="font-bold tracking-wide"
+                >relay_firebase.ino | Arduino IDE 2.x</span
+              >
+            </div>
+            <span class="text-[11px] text-teal-100 font-sans hidden sm:inline"
+              >ESP32 Dev Module</span
+            >
+          </div>
+
+          <div class="p-4 overflow-x-auto">
+            <pre
+              id="arduinoCodeText"
+              class="font-mono text-xs leading-relaxed text-[#222222] [counter-reset:line]"
+            ><span class="line"><span class="text-[#00979C] font-bold">#include</span> <span class="text-[#005C5F]">&lt;WiFi.h&gt;</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#include</span> <span class="text-[#005C5F]">&lt;Firebase_ESP_Client.h&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span class="text-[#7E7E7E] italic">// 1. KONFIGURASI WIFI &amp; FIREBASE</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#define</span> WIFI_SSID <span class="text-[#005C5F]">"........"</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#define</span> WIFI_PASSWORD <span class="text-[#005C5F]">"........"</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#define</span> DATABASE_URL <span class="text-[#005C5F]">"........"</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#define</span> DATABASE_SECRET <span class="text-[#005C5F]">"........"</span></span>
+<span class="line"></span>
+<span class="line"><span class="text-[#7E7E7E] italic">// 2. KONFIGURASI PIN RELAY (GPIO 5)</span></span>
+<span class="line"><span class="text-[#00979C] font-bold">#define</span> RELAY_PIN 5</span>
+<span class="line"></span>
+<span class="line"><span class="text-[#00979C] font-bold">FirebaseData</span> fbdo;</span>
+<span class="line"><span class="text-[#00979C] font-bold">FirebaseAuth</span> auth;</span>
+<span class="line"><span class="text-[#00979C] font-bold">FirebaseConfig</span> config;</span>
+<span class="line"></span>
+<span class="line"><span class="text-[#00979C] font-bold">void</span> <span class="text-[#D35400] font-bold">setup</span>() {</span>
+<span class="line">  <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">begin</span>(115200);</span>
+<span class="line">  <span class="text-[#D35400]">pinMode</span>(RELAY_PIN, <span class="text-[#00979C]">OUTPUT</span>);</span>
+<span class="line">  <span class="text-[#D35400]">digitalWrite</span>(RELAY_PIN, <span class="text-[#00979C]">LOW</span>); <span class="text-[#7E7E7E] italic">// Matikan relay saat awal booting</span></span>
+<span class="line"></span>
+<span class="line">  <span class="text-[#00979C] font-bold">WiFi</span>.<span class="text-[#D35400]">begin</span>(WIFI_SSID, WIFI_PASSWORD);</span>
+<span class="line">  <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">print</span>(<span class="text-[#005C5F]">"Connecting to Wi-Fi"</span>);</span>
+<span class="line">  <span class="text-[#00979C] font-bold">while</span> (<span class="text-[#00979C] font-bold">WiFi</span>.<span class="text-[#D35400]">status</span>() != <span class="text-[#00979C]">WL_CONNECTED</span>) {</span>
+<span class="line">    <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">print</span>(<span class="text-[#005C5F]">"."</span>);</span>
+<span class="line">    <span class="text-[#D35400]">delay</span>(300);</span>
+<span class="line">  }</span>
+<span class="line">  <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">println</span>(<span class="text-[#005C5F]">"\nConnected!"</span>);</span>
+<span class="line"></span>
+<span class="line">  config.host = DATABASE_URL;</span>
+<span class="line">  config.signer.tokens.legacy_token = DATABASE_SECRET;</span>
+<span class="line">  <span class="text-[#00979C] font-bold">Firebase</span>.<span class="text-[#D35400]">begin</span>(&amp;config, &amp;auth);</span>
+<span class="line">  <span class="text-[#00979C] font-bold">Firebase</span>.<span class="text-[#D35400]">reconnectWiFi</span>(<span class="text-[#00979C]">true</span>);</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line"><span class="text-[#00979C] font-bold">void</span> <span class="text-[#D35400] font-bold">loop</span>() {</span>
+<span class="line">  <span class="text-[#7E7E7E] italic">// Membaca status instruksi dari Firebase path: relay/button1</span></span>
+<span class="line">  <span class="text-[#00979C] font-bold">if</span> (<span class="text-[#00979C] font-bold">Firebase</span>.RTDB.<span class="text-[#D35400]">getString</span>(&amp;fbdo, <span class="text-[#005C5F]">"relay/button1"</span>)) {</span>
+<span class="line">    <span class="text-[#00979C] font-bold">String</span> status = fbdo.<span class="text-[#D35400]">stringData</span>();</span>
+<span class="line">    </span>
+<span class="line">    <span class="text-[#00979C] font-bold">if</span> (status == <span class="text-[#005C5F]">"ON"</span>) {</span>
+<span class="line">      <span class="text-[#D35400]">digitalWrite</span>(RELAY_PIN, <span class="text-[#00979C]">HIGH</span>); <span class="text-[#7E7E7E] italic">// Nyalakan Relay</span></span>
+<span class="line">      <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">println</span>(<span class="text-[#005C5F]">"Relay 1: ON"</span>);</span>
+<span class="line">    } <span class="text-[#00979C] font-bold">else</span> {</span>
+<span class="line">      <span class="text-[#D35400]">digitalWrite</span>(RELAY_PIN, <span class="text-[#00979C]">LOW</span>);  <span class="text-[#7E7E7E] italic">// Matikan Relay</span></span>
+<span class="line">      <span class="text-[#00979C] font-bold">Serial</span>.<span class="text-[#D35400]">println</span>(<span class="text-[#005C5F]">"Relay 1: OFF"</span>);</span>
+<span class="line">    }</span>
+<span class="line">  }</span>
+<span class="line">  <span class="text-[#D35400]">delay</span>(500); <span class="text-[#7E7E7E] italic">// Cek status setiap 0.5 detik</span></span>
+<span class="line">}</span></pre>
+          </div>
+        </div>
+
+        <!-- SEKSI PENJELASAN KODE PROGRAM ARDUINO (DEFAULT HIDDEN) -->
+        <div class="pt-2">
+          <button
+            type="button"
+            onclick="togglePenjelasanArduino()"
+            class="w-full flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl text-left focus:outline-none group cursor-pointer hover:bg-teal-50/50 transition"
+          >
+            <div class="flex items-center gap-2">
+              <i class="ri-book-2-fill text-teal-600 text-lg"></i>
+              <h3 class="font-semibold text-sm text-slate-800">
+                Penjelasan Kode Program Arduino IDE
+              </h3>
+            </div>
+            <div
+              class="flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200"
+            >
+              <span id="toggleArduinoText">Tampilkan</span>
+              <i
+                id="toggleArduinoIcon"
+                class="ri-arrow-down-s-line text-base transition-transform duration-300"
+              ></i>
+            </div>
+          </button>
+
+          <!-- KONTAINER TABEL PENJELASAN -->
+          <div
+            id="penjelasanArduinoContent"
+            class="hidden mt-3 space-y-3 transition-all duration-300"
+          >
+            <div class="overflow-x-auto border border-slate-200 rounded-xl">
+              <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr
+                    class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 text-xs"
+                  >
+                    <th class="p-3 w-1/3">Potongan Kode Pokok</th>
+                    <th class="p-3">Penjelasan Fungsi & Perannya</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 font-mono text-xs">
+                  <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-[#D35400]">
+                      pinMode(RELAY_PIN, OUTPUT)
+                    </td>
+                    <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                      Mengkonfigurasi pin GPIO 5 pada ESP32 agar bertindak
+                      sebagai pin keluaran pemicu sinyal kontrol relay/LED.
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-[#00979C]">
+                      Firebase.RTDB.getString(&amp;fbdo, "relay/button1")
+                    </td>
+                    <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                      Fungsi utama ESP32 untuk
+                      <strong>mengambil/membaca</strong> status teks ( string )
+                      dari path
+                      <code
+                        class="bg-slate-100 px-1 py-0.5 rounded border border-slate-200 text-emerald-700 font-bold"
+                        >"relay/button1"</code
+                      >
+                      di database.
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-[#D35400]">
+                      digitalWrite(RELAY_PIN, HIGH / LOW)
+                    </td>
+                    <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                      Mengirimkan sinyal logika HIGH (3.3V) untuk menyalakan
+                      relay/LED atau LOW (0V) untuk mematikannya berdasarkan
+                      respon dari Firebase.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Home
+        </a>
+        <a
+          href="6.2.html"
+          class="text-xs font-semibold px-4 py-2 rounded-lg text-white transition flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+        >
+          Modul 6.2 <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </main>
+
+    <!-- SCRIPT INTERAKTIF -->
+    <script>
+      function selectCodeBlock(element) {
+        document.querySelectorAll(".code-block-item").forEach((block) => {
+          block.classList.remove("active-block");
+        });
+        element.classList.add("active-block");
+      }
+
+      // Logika Klik Simulasi Tombol Web
+      function simulasiClick(val) {
+        const simStatus = document.getElementById("simStatus");
+        const rtdbValueDisplay = document.getElementById("rtdbValueDisplay");
+
+        if (simStatus) simStatus.innerText = val;
+        if (rtdbValueDisplay) {
+          rtdbValueDisplay.innerText = `"${val}"`;
+          if (val === "ON") {
+            rtdbValueDisplay.className =
+              "font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded";
+          } else {
+            rtdbValueDisplay.className =
+              "font-mono font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded";
+          }
+        }
+      }
+
+      // Salin Semua Kode HTML & JS
+      function copyAllCode(event) {
+        let fullCode = "";
+        document.querySelectorAll(".code-block-text").forEach((pre) => {
+          fullCode += pre.innerText + "\n";
+        });
+
+        navigator.clipboard.writeText(fullCode).then(() => {
+          const btn = event
+            ? event.currentTarget
+            : document.querySelector("button[onclick*='copyAllCode']");
+          if (!btn) return;
+
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = `<i class="ri-check-line text-emerald-600"></i> Tersalin!`;
+          btn.classList.add(
+            "bg-emerald-50",
+            "text-emerald-700",
+            "border-emerald-300",
+          );
+
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove(
+              "bg-emerald-50",
+              "text-emerald-700",
+              "border-emerald-300",
+            );
+          }, 2000);
+        });
+      }
+
+      // Toggle Penjelasan Firebase
+      function toggleMateri() {
+        const content = document.getElementById("materiContent");
+        const toggleText = document.getElementById("toggleText");
+        const toggleIcon = document.getElementById("toggleIcon");
+
+        if (!content) return;
+
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden");
+          if (toggleText) toggleText.innerText = "Sembunyikan";
+          if (toggleIcon) {
+            toggleIcon.className =
+              "ri-arrow-up-s-line text-base transition-transform duration-300";
+          }
+        } else {
+          content.classList.add("hidden");
+          if (toggleText) toggleText.innerText = "Tampilkan";
+          if (toggleIcon) {
+            toggleIcon.className =
+              "ri-arrow-down-s-line text-base transition-transform duration-300";
+          }
+        }
+      }
+
+      // Salin Kode Arduino IDE
+      function copyArduinoCode(event) {
+        const codeElement = document.getElementById("arduinoCodeText");
+        if (!codeElement) return;
+
+        const codeText = codeElement.innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+          const btn = event
+            ? event.currentTarget
+            : document.querySelector("button[onclick*='copyArduinoCode']");
+          if (!btn) return;
+
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = `<i class="ri-check-line text-emerald-600"></i> Kode Tersalin!`;
+          btn.classList.add(
+            "bg-emerald-50",
+            "text-emerald-700",
+            "border-emerald-300",
+          );
+
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove(
+              "bg-emerald-50",
+              "text-emerald-700",
+              "border-emerald-300",
+            );
+          }, 2000);
+        });
+      }
+
+      // Toggle Penjelasan Arduino
+      function togglePenjelasanArduino() {
+        const content = document.getElementById("penjelasanArduinoContent");
+        const toggleText = document.getElementById("toggleArduinoText");
+        const toggleIcon = document.getElementById("toggleArduinoIcon");
+
+        if (!content) return;
+
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden");
+          if (toggleText) toggleText.innerText = "Sembunyikan";
+          if (toggleIcon) {
+            toggleIcon.className =
+              "ri-arrow-up-s-line text-base transition-transform duration-300";
+          }
+        } else {
+          content.classList.add("hidden");
+          if (toggleText) toggleText.innerText = "Tampilkan";
+          if (toggleIcon) {
+            toggleIcon.className =
+              "ri-arrow-down-s-line text-base transition-transform duration-300";
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SMTI IoT Lab — Materi Web Development & IoT Firebase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- REMIXICON CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --ink: #0f172a;
+        --muted: #64748b;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Card Hover Transition */
+      .module-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .module-card:hover {
+        transform: translateY(-6px);
+      }
+      .module-card:hover .bg-icon-watermark {
+        transform: scale(1.15) rotate(-5deg);
+        opacity: 0.22;
+      }
+      .module-card:hover .arrow-icon {
+        transform: translateX(4px);
+      }
+
+      .bg-icon-watermark {
+        transition: all 0.4s ease;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Web Development & Internet of Things
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <!-- MODULES -->
+    <main class="flex-1 pt-10 pb-12 px-6 max-w-7xl mx-auto w-full">
+      <div class="mb-8 border-b border-slate-200 pb-5">
+        <div class="reveal mb-10 max-w-xl">
+          <h2 class="font-display text-3xl font-bold mb-3 text-slate-900">
+            Daftar Modul
+          </h2>
+          <p class="text-slate-600">
+            Sebelas modul berurutan — mulai dari dasar pemrograman web,
+            integrasi cloud IoT Firebase, hingga deployment aplikasi
+            multiplatform.
+          </p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- MODUL 01: HTML -->
+          <a
+            href="1.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-orange-200/80 shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:border-orange-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-html5-line text-8xl text-orange-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-md border border-orange-200"
+              >
+                MODUL 01
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center"
+              >
+                <i class="ri-html5-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-orange-600 transition-colors relative z-10"
+            >
+              Dasar HTML
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Pengenalan tag dasar, struktur dokumen web, elemen formulir, dan
+              penyusunan tata letak dasar.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-orange-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 02: CSS -->
+          <a
+            href="2.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-sky-200/80 shadow-sm hover:shadow-xl hover:shadow-sky-500/10 hover:border-sky-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-css3-line text-8xl text-sky-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-md border border-sky-200"
+              >
+                MODUL 02
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center"
+              >
+                <i class="ri-css3-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-sky-600 transition-colors relative z-10"
+            >
+              Dasar CSS & Styling
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Mendesain tampilan web, pewarnaan, konsep Flexbox & Grid, serta
+              penggunaan framework Tailwind CSS.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-sky-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 03: JS -->
+          <a
+            href="3.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-amber-200/80 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 hover:border-amber-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-javascript-line text-8xl text-amber-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200"
+              >
+                MODUL 03
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center"
+              >
+                <i class="ri-javascript-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-amber-600 transition-colors relative z-10"
+            >
+              Dasar JavaScript
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Variabel, manipulasi DOM, event listener, serta logika pemrograman
+              interaktif pada browser.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-amber-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 04: Pengantar IoT -->
+          <a
+            href="4.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-indigo-200/80 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-cpu-line text-8xl text-indigo-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200"
+              >
+                MODUL 04
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center"
+              >
+                <i class="ri-cpu-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors relative z-10"
+            >
+              Pengantar IoT & Firebase
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Konsep dasar IoT, arsitektur Realtime Database, dan alur
+              komunikasi data dari sensor ke cloud.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-indigo-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 05: Monitoring (sebelumnya Modul 06) -->
+          <a
+            href="5.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-emerald-200/80 shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-line-chart-line text-8xl text-emerald-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200"
+              >
+                MODUL 05
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center"
+              >
+                <i class="ri-line-chart-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors relative z-10"
+            >
+              Monitoring Realtime
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Membaca data sensor secara otomatis menggunakan
+              <code
+                class="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded text-emerald-600"
+                >onValue</code
+              >
+              dan visualisasi grafik Chart.js.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-emerald-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 06: Kontrol (sebelumnya Modul 07) -->
+          <a
+            href="6.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-purple-200/80 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-toggle-line text-8xl text-purple-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md border border-purple-200"
+              >
+                MODUL 06
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"
+              >
+                <i class="ri-toggle-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-purple-600 transition-colors relative z-10"
+            >
+              Kontrol Button & Switch
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Mengirim perintah kendali dari antarmuka web ke mikrokontroler
+              dengan
+              <code
+                class="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded text-purple-600"
+                >set()</code
+              >
+              dan
+              <code
+                class="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded text-purple-600"
+                >update()</code
+              >.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-purple-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 07: Datalogger (sebelumnya Modul 08) -->
+          <a
+            href="7.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-cyan-200/80 shadow-sm hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-database-2-line text-8xl text-cyan-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-cyan-600 bg-cyan-50 px-2.5 py-1 rounded-md border border-cyan-200"
+              >
+                MODUL 07
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-cyan-100 text-cyan-600 flex items-center justify-center"
+              >
+                <i class="ri-database-2-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-cyan-600 transition-colors relative z-10"
+            >
+              Datalogger & Riwayat Data
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Menyimpan histori pengukuran sensor dan query data terbatas
+              menggunakan
+              <code
+                class="font-mono text-xs bg-slate-100 px-1 py-0.5 rounded text-cyan-600"
+                >limitToLast</code
+              >.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-cyan-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 08: Autentikasi (sebelumnya Modul 09) -->
+          <a
+            href="8.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-teal-200/80 shadow-sm hover:shadow-xl hover:shadow-teal-500/10 hover:border-teal-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-shield-keyhole-line text-8xl text-teal-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-200"
+              >
+                MODUL 08
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center"
+              >
+                <i class="ri-shield-keyhole-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-teal-600 transition-colors relative z-10"
+            >
+              Autentikasi Pengguna
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Sistem login aman untuk siswa/operator menggunakan Firebase
+              Authentication.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-teal-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 09: Hosting Firebase (sebelumnya Modul 10) -->
+          <a
+            href="9.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-pink-200/80 shadow-sm hover:shadow-xl hover:shadow-pink-500/10 hover:border-pink-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-cloud-upload-line text-8xl text-pink-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-pink-600 bg-pink-50 px-2.5 py-1 rounded-md border border-pink-200"
+              >
+                MODUL 09
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center"
+              >
+                <i class="ri-cloud-upload-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-pink-600 transition-colors relative z-10"
+            >
+              Hosting dengan Firebase
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Mendeploy aplikasi web IoT ke internet menggunakan Firebase
+              Hosting CLI agar dapat diakses publik.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-pink-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 10: Electron Desktop (sebelumnya Modul 11) -->
+          <a
+            href="10.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-blue-200/80 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-computer-line text-8xl text-blue-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200"
+              >
+                MODUL 10
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"
+              >
+                <i class="ri-computer-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-blue-600 transition-colors relative z-10"
+            >
+              Aplikasi Desktop Electron
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Mengonversi program web IoT menjadi aplikasi desktop (.exe)
+              menggunakan Electron.js.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-blue-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+
+          <!-- MODUL 11: Android WebView (sebelumnya Modul 12) -->
+          <a
+            href="11.1.html"
+            class="module-card reveal block bg-white rounded-2xl p-6 border border-green-200/80 shadow-sm hover:shadow-xl hover:shadow-green-500/10 hover:border-green-400 relative overflow-hidden group"
+          >
+            <i
+              class="ri-android-line text-8xl text-green-500 opacity-10 absolute -right-3 -bottom-4 bg-icon-watermark pointer-events-none select-none"
+            ></i>
+
+            <div class="flex items-center justify-between mb-4 relative z-10">
+              <span
+                class="font-mono text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-md border border-green-200"
+              >
+                MODUL 11
+              </span>
+              <div
+                class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"
+              >
+                <i class="ri-android-line text-lg"></i>
+              </div>
+            </div>
+            <h3
+              class="font-display font-bold text-xl text-slate-900 mb-2 group-hover:text-green-600 transition-colors relative z-10"
+            >
+              Aplikasi Android WebView
+            </h3>
+            <p
+              class="text-sm text-slate-600 mb-6 leading-relaxed relative z-10"
+            >
+              Membungkus antarmuka web ke dalam aplikasi Android (.apk)
+              menggunakan WebView composer.
+            </p>
+            <div
+              class="flex items-center text-xs font-semibold text-green-600 gap-1 relative z-10"
+            >
+              <span>Pelajari Modul</span>
+              <i
+                class="ri-arrow-right-line arrow-icon transition-transform"
+              ></i>
+            </div>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="px-6 py-8 border-t border-slate-200 bg-white">
+      <div
+        class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500"
+      >
+        <span>SMK SMTI Yogyakarta — Web Development & Internet of Things</span>
+        <span class="font-mono">Total 11 Modul Pembelajaran</span>
+      </div>
+    </footer>
+
+    <script>
+      // Scroll reveal animation
+      const revealEls = document.querySelectorAll(".reveal");
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.15 },
+      );
+      revealEls.forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>

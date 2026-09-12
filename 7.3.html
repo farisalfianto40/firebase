@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modul 07: IoT Data Logger Chart.js</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html,
+      body {
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-code {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .code-block-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .code-block-item {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+      }
+      .code-block-item:hover {
+        background-color: #e0e7ff !important;
+        border-left-color: #818cf8;
+      }
+      .code-block-item.active-block {
+        background-color: #eef2ff !important;
+        border-left-color: #4f46e5 !important;
+        box-shadow: inset 0 0 0 1px #c7d2fe;
+      }
+
+      .status-dot {
+        animation: statusPulse 2s infinite;
+      }
+
+      @keyframes statusPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+        }
+      }
+
+      .browser-window {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border: 1px solid #cbd5e1;
+      }
+      .browser-header {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      .browser-tab {
+        background: #ffffff;
+        color: #0f172a;
+        padding: 4px 12px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        border: 1px solid #e2e8f0;
+        border-bottom: none;
+      }
+      .browser-address-bar {
+        background: #ffffff;
+        color: #334155;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        border: 1px solid #cbd5e1;
+      }
+      .browser-viewport {
+        background-color: #ffffff;
+        min-height: 220px;
+        padding: 16px;
+      }
+    </style>
+  </head>
+
+  <body
+    class="min-h-screen bg-slate-50 text-slate-800 antialiased overflow-x-hidden"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+      <!-- HEADER -->
+      <header class="mb-6">
+        <div
+          class="flex items-center gap-2 text-xs font-mono mb-2 text-slate-500"
+        >
+          <a href="1.html" class="hover:underline hover:text-slate-700"
+            >Modul 04</a
+          >
+          /
+          <span class="text-indigo-600 font-semibold"
+            >Data Logging - Chart</span
+          >
+        </div>
+        <h1
+          class="font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+        >
+          Merekam Riwayat Sensor & Menampilkan 5 Data Terakhir
+        </h1>
+        <p class="text-xs md:text-sm mt-1 text-slate-600">
+          Praktikum pengiriman data sensor DHT11 berkala menggunakan metode
+          <code
+            class="bg-slate-200 text-indigo-700 px-1 py-0.5 rounded font-mono font-semibold"
+            >pushJSON()</code
+          >
+          ke Firebase RTDB dan menampilkan 5 data riwayat terbaru secara
+          realtime pada tabel web.
+        </p>
+      </header>
+
+      <!-- SEKSI INTERAKTIF DATABASE & PREVIEW GRAFIK -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 w-full">
+        <!-- 1. DATABASE SIMULATOR LOG -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3"
+        >
+          <div
+            class="flex items-center justify-between border-b border-slate-100 pb-3"
+          >
+            <div class="flex items-center gap-2">
+              <i class="ri-database-2-fill text-indigo-600 text-lg"></i>
+              <h2 class="font-display font-bold text-base text-slate-900">
+                1. Skema Data (`sensor`)
+              </h2>
+            </div>
+            <span
+              class="text-[10px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"
+            >
+              +1 Log / 5s
+            </span>
+          </div>
+
+          <div
+            class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50"
+          >
+            <div class="p-3 bg-white border-b border-slate-200">
+              <div class="font-mono text-[11px] text-slate-400 truncate">
+                https://latihaniot-default-rtdb.firebaseio.com/sensor
+              </div>
+            </div>
+
+            <div class="p-4 bg-white font-mono text-xs space-y-2">
+              <div class="text-slate-800 font-bold flex items-center gap-1">
+                sensor
+              </div>
+              <div
+                id="jsonContainer"
+                class="ml-4 pl-3 border-l-2 border-indigo-200 space-y-2 text-[11px]"
+              >
+                <!-- Rendered dynamically by JavaScript -->
+              </div>
+            </div>
+          </div>
+          <p class="text-[11px] text-indigo-600 font-medium">
+            * Setiap push log menyimpan 2 bidang data: `suhu` dan `waktu`.
+          </p>
+        </div>
+
+        <!-- 2. HASIL TAMPILAN GRAFIK BROWSER -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3"
+        >
+          <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <i class="ri-window-fill text-indigo-600 text-lg"></i>
+            <h2 class="font-display font-bold text-base text-slate-900">
+              2. Preview Grafik Suhu Stream
+            </h2>
+          </div>
+
+          <div class="browser-window">
+            <div class="browser-header">
+              <div class="flex items-center justify-between">
+                <div class="browser-tab">
+                  <i class="ri-line-chart-line text-slate-400"></i>
+                  <span>chart_suhu.html</span>
+                </div>
+              </div>
+              <div class="browser-address-bar">
+                <i class="ri-refresh-line text-slate-400"></i>
+                <span class="text-slate-500 truncate font-mono text-[10px]"
+                  >http://127.0.0.1:5500/chart_suhu.html</span
+                >
+              </div>
+            </div>
+
+            <div class="browser-viewport">
+              <h3 class="text-xs font-bold text-slate-800 mb-2">
+                Riwayat Suhu Realtime (°C)
+              </h3>
+              <div class="relative h-56 w-full">
+                <canvas id="demoChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-500 italic">
+            * Sumbu X secara presisi membaca field `waktu` dari database, Sumbu
+            Y dimulai dari 0.
+          </p>
+        </div>
+      </section>
+
+      <!-- SEKSI PROGRAM KODE UTUH HTML CHART.JS -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 mb-8 shadow-sm space-y-4"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3"
+        >
+          <div class="flex items-center gap-2">
+            <i class="ri-code-box-fill text-indigo-600 text-xl"></i>
+            <h2 class="font-display font-bold text-lg text-slate-900">
+              3. Kode Program Web Frontend (`chart_suhu.html`)
+            </h2>
+          </div>
+          <button
+            onclick="copyCode('htmlCodeText', this)"
+            class="hover:bg-indigo-50 bg-slate-100 text-indigo-700 border-indigo-200 hover:border-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+          >
+            <i class="ri-file-copy-line text-indigo-600"></i> Salin Kode
+          </button>
+        </div>
+
+        <div
+          class="bg-slate-50 rounded-xl border border-slate-300 overflow-hidden shadow-sm"
+        >
+          <div
+            class="bg-slate-200/80 px-4 py-2.5 border-b border-slate-300 flex items-center justify-between text-xs text-slate-700 font-mono"
+          >
+            <div class="flex items-center gap-2">
+              <span
+                class="w-3 h-3 rounded-full bg-rose-400 inline-block border border-rose-500/30"
+              ></span>
+              <span
+                class="w-3 h-3 rounded-full bg-amber-400 inline-block border border-amber-500/30"
+              ></span>
+              <span
+                class="w-3 h-3 rounded-full bg-emerald-400 inline-block border border-emerald-500/30"
+              ></span>
+              <span class="ml-2 font-bold text-slate-800">chart_suhu.html</span>
+            </div>
+            <span
+              class="text-[11px] text-slate-500 font-sans font-medium hidden sm:inline"
+              >HTML & Chart.js v4 + Firebase SDK v10</span
+            >
+          </div>
+
+          <div id="htmlCodeText" class="p-3 space-y-1.5 bg-slate-50">
+            <!-- BLOK 1: STRUKTUR CANVAS & CHART.JS CDN -->
+            <div
+              class="code-block-item active-block p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-amber-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-code-s-slash-line"></i> // BLOK 1: Structure Canvas
+                Web & Include Chart.js
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              ><span class="text-slate-400 font-semibold">&lt;!DOCTYPE html&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;html lang="id"&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;head&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;meta charset="UTF-8"&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;title&gt;</span>Data Logger Suhu Realtime<span class="text-indigo-700 font-semibold">&lt;/title&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;style&gt;</span>
+    .chart-container {
+      height: 300px;
+      width: 600px;
+    }
+  <span class="text-indigo-700 font-semibold">&lt;/style&gt;</span>
+  <span class="text-amber-800 font-bold bg-amber-100/70 px-1 rounded">&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;/head&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;body&gt;</span>
+
+  <span class="text-indigo-700 font-semibold">&lt;div class="card"&gt;</span>
+    <span class="text-indigo-700 font-semibold">&lt;h2 class="card-title"&gt;</span>Grafik Riwayat Suhu (°C)<span class="text-indigo-700 font-semibold">&lt;/h2&gt;</span>
+    <span class="text-indigo-700 font-semibold">&lt;div class="chart-container"&gt;</span>
+      <span class="text-amber-800 font-bold bg-amber-100/70 px-1 rounded">&lt;canvas id="sensorChart"&gt;&lt;/canvas&gt;</span>
+    <span class="text-indigo-700 font-semibold">&lt;/div&gt;</span>
+  <span class="text-indigo-700 font-semibold">&lt;/div&gt;</span></pre>
+            </div>
+
+            <!-- BLOK 2: INITALIZE CHART CONFIG -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-indigo-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-line-chart-line"></i> // BLOK 2: Configuration
+                Chart Suhu & Label Sumbu X/Y
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >  <span class="text-indigo-700 font-semibold">&lt;script&gt;</span>
+    <span class="text-purple-700 font-bold">const</span> ctx = document.getElementById(<span class="text-emerald-700 font-semibold">'sensorChart'</span>).getContext(<span class="text-emerald-700 font-semibold">'2d'</span>);
+    <span class="text-purple-700 font-bold">const</span> sensorChart = <span class="text-purple-700 font-bold">new</span> Chart(ctx, {
+      type: <span class="text-emerald-700 font-semibold">'line'</span>,
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: <span class="text-emerald-700 font-semibold">'Suhu (°C)'</span>,
+            data: [],
+            borderColor: <span class="text-emerald-700 font-semibold">'#059669'</span>,
+            backgroundColor: <span class="text-emerald-700 font-semibold">'rgba(5, 150, 105, 0.25)'</span>,
+            fill: <span class="text-purple-700 font-bold">true</span>,
+            tension: 0.3
+          }
+        ]
+      },
+      options: {
+        responsive: <span class="text-purple-700 font-bold">true</span>,
+        maintainAspectRatio: <span class="text-purple-700 font-bold">false</span>,
+        animation: { duration: 500 },
+        scales: {
+          x: {
+            title: {
+              display: <span class="text-purple-700 font-bold">true</span>,
+              text: <span class="text-emerald-700 font-semibold">'Waktu Log'</span>,
+              font: { weight: <span class="text-emerald-700 font-semibold">'bold'</span> }
+            }
+          },
+          y: {
+            title: {
+              display: <span class="text-purple-700 font-bold">true</span>,
+              text: <span class="text-emerald-700 font-semibold">'Suhu (°C)'</span>,
+              font: { weight: <span class="text-emerald-700 font-semibold">'bold'</span> }
+            },
+            beginAtZero: <span class="text-purple-700 font-bold">true</span>
+          }
+        }
+      }
+    });
+  <span class="text-indigo-700 font-semibold">&lt;/script&gt;</span></pre>
+            </div>
+
+            <!-- BLOK 3: FIREBASE REALTIME READ SUHU & WAKTU -->
+            <div
+              class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              onclick="selectCodeBlock(this)"
+            >
+              <div
+                class="text-[11px] font-mono font-bold text-emerald-700 mb-1.5 flex items-center gap-1.5"
+              >
+                <i class="ri-refresh-line"></i> // BLOK 3: Read Realtime
+                Firebase (Membaca suhu & waktu)
+              </div>
+              <pre
+                class="code-block-text text-slate-800"
+              >  <span class="text-indigo-700 font-semibold">&lt;script type="module"&gt;</span>
+    <span class="text-purple-700 font-bold">import</span> { initializeApp } <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"</span>;
+    <span class="text-purple-700 font-bold">import</span> { getDatabase, ref, query, orderByKey, limitToLast, onValue } <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"</span>;
+
+    <span class="text-purple-700 font-bold">const</span> firebaseConfig = {
+      apiKey: <span class="text-emerald-700 font-semibold">"........"</span>,
+      databaseURL: <span class="text-emerald-700 font-semibold">"........"</span>,
+      projectId: <span class="text-emerald-700 font-semibold">"........"</span>
+    };
+
+    <span class="text-purple-700 font-bold">const</span> app = initializeApp(firebaseConfig);
+    <span class="text-purple-700 font-bold">const</span> db = getDatabase(app);
+
+    <span class="text-slate-400 italic">// Ambil 10 data log terakhir dari node 'sensor'</span>
+    <span class="text-purple-700 font-bold">const</span> logRef = query(ref(db, <span class="text-emerald-700 font-bold">"sensor"</span>), orderByKey(), limitToLast(10));
+
+    onValue(logRef, (snapshot) =&gt; {
+      <span class="text-purple-700 font-bold">if</span> (!snapshot.exists()) <span class="text-purple-700 font-bold">return</span>;
+
+      <span class="text-purple-700 font-bold">const</span> labels = [];
+      <span class="text-purple-700 font-bold">const</span> tempVal = [];
+
+      snapshot.forEach((childSnapshot) =&gt; {
+        <span class="text-purple-700 font-bold">const</span> val = childSnapshot.val();
+        
+        <span class="text-slate-400 italic">// Membaca field 'waktu' untuk Sumbu X dan 'suhu' untuk Sumbu Y</span>
+        labels.push(val.waktu); 
+        tempVal.push(val.suhu);
+      });
+
+      sensorChart.data.labels = labels;
+      sensorChart.data.datasets[0].data = tempVal;
+
+      sensorChart.update();
+    });
+  <span class="text-indigo-700 font-semibold">&lt;/script&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;/body&gt;</span>
+<span class="text-indigo-700 font-semibold">&lt;/html&gt;</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEKSI MATERI RINGKAS COLLAPSIBLE (Awalnya Tersembunyi) -->
+      <section
+        class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4 mb-8"
+      >
+        <button
+          type="button"
+          onclick="toggleMateri()"
+          class="w-full flex items-center justify-between border-b border-slate-100 pb-3 text-left focus:outline-none group cursor-pointer"
+        >
+          <div class="flex items-center gap-2">
+            <i class="ri-book-read-fill text-indigo-600 text-xl"></i>
+            <h2
+              class="font-display font-bold text-lg text-slate-900 group-hover:text-indigo-600 transition"
+            >
+              Kunci Konfigurasi Chart Suhu & Struktur Database
+            </h2>
+          </div>
+          <div
+            class="flex items-center gap-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100"
+          >
+            <span id="toggleText">Tampilkan</span>
+            <i
+              id="toggleIcon"
+              class="ri-arrow-down-s-line text-base transition-transform duration-300"
+            ></i>
+          </div>
+        </button>
+
+        <!-- KONDISI AWAL HIDDEN -->
+        <div
+          id="materiContent"
+          class="space-y-4 transition-all duration-300 hidden"
+        >
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm border-collapse">
+              <thead>
+                <tr
+                  class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200"
+                >
+                  <th class="p-3 w-1/3">Properti / Field</th>
+                  <th class="p-3">Penjelasan & Fungsi Utama</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 font-mono text-xs">
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-indigo-600">val.waktu</td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Field waktu yang disimpan oleh perangkat IoT/Firebase saat
+                    data dipush. Digunakan langsung sebagai nilai label pada
+                    Sumbu X.
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-indigo-600">val.suhu</td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Field angka penampung nilai sensor suhu (°C) yang dikirimkan
+                    perangkat ke database Realtime.
+                  </td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 font-bold text-indigo-600">
+                    beginAtZero: true
+                  </td>
+                  <td class="p-3 text-slate-700 font-sans leading-relaxed">
+                    Memaksa sumbu Y untuk selalu memulai skala pengukuran dari
+                    nilai 0.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="7.2.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Modul 7.2
+        </a>
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-4 py-2 rounded-lg text-white transition flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+        >
+          Selesai <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </main>
+
+    <!-- SCRIPT UTILITAS & DEMO CHART RENDER -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let demoChartInstance = null;
+        let timeCounter = 25;
+
+        // Inisialisasi awal 5 data
+        let labelsList = [
+          "10:00:05",
+          "10:00:10",
+          "10:00:15",
+          "10:00:20",
+          "10:00:25",
+        ];
+        let dataList = [26.4, 27.2, 26.8, 28.1, 29.5];
+
+        function renderJSONTree() {
+          const container = document.getElementById("jsonContainer");
+          if (!container) return;
+
+          let html = "";
+          for (let i = 0; i < labelsList.length; i++) {
+            const isLast = i === labelsList.length - 1;
+            const prefix = isLast ? "└─" : "├─";
+            const idSuffix = (12345671 + i).toString();
+            html += `
+              <div class="bg-indigo-50/60 p-2 rounded border border-indigo-100 transition-all duration-300">
+                <span class="text-indigo-600 font-bold">${prefix} -Nxxxxx${idSuffix}</span>
+                <div class="ml-3 text-slate-600 space-y-0.5">
+                  <div>├─ suhu: <span class="font-bold text-emerald-600">${dataList[i]}</span></div>
+                  <div>└── waktu: <span class="font-bold text-indigo-600">"${labelsList[i]}"</span></div>
+                </div>
+              </div>
+            `;
+          }
+          container.innerHTML = html;
+        }
+
+        function addNewSensorData() {
+          timeCounter += 5;
+          const secs = timeCounter % 60;
+          const mins = Math.floor(timeCounter / 60);
+          const timeStr = `10:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+          const newTemp = parseFloat(
+            (Math.random() * (32.0 - 25.0) + 25.0).toFixed(2),
+          );
+
+          labelsList.push(timeStr);
+          labelsList.shift();
+
+          dataList.push(newTemp);
+          dataList.shift();
+
+          renderJSONTree();
+
+          if (demoChartInstance) {
+            demoChartInstance.data.labels = labelsList;
+            demoChartInstance.data.datasets[0].data = dataList;
+            demoChartInstance.update();
+          }
+        }
+
+        renderJSONTree();
+
+        const demoCtx = document.getElementById("demoChart").getContext("2d");
+        demoChartInstance = new Chart(demoCtx, {
+          type: "line",
+          data: {
+            labels: labelsList,
+            datasets: [
+              {
+                label: "Suhu (°C)",
+                data: dataList,
+                borderColor: "#059669",
+                backgroundColor: "rgba(5, 150, 105, 0.25)",
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+              duration: 600,
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Waktu Log",
+                  font: {
+                    weight: "bold",
+                    size: 11,
+                  },
+                },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Suhu (°C)",
+                  font: {
+                    weight: "bold",
+                    size: 11,
+                  },
+                },
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+
+        setInterval(addNewSensorData, 5000);
+      });
+
+      function selectCodeBlock(element) {
+        document.querySelectorAll(".code-block-item").forEach((block) => {
+          block.classList.remove("active-block");
+        });
+        element.classList.add("active-block");
+      }
+
+      // Fungsi Salin Kode terpadu
+      async function copyCode(elementId, btn) {
+        const codeElement = document.getElementById(elementId);
+        if (!codeElement) return;
+
+        let codeText = "";
+        if (elementId === "arduinoCodeText") {
+          const lines = codeElement.querySelectorAll("span.line");
+          if (lines.length > 0) {
+            codeText = Array.from(lines)
+              .map((line) => line.innerText.replace(/\r?\n|\r/g, ""))
+              .join("\n");
+          } else {
+            codeText = codeElement.innerText;
+          }
+        } else {
+          codeText = codeElement.innerText;
+        }
+
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(codeText);
+          } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = codeText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+          }
+
+          if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="ri-check-line"></i> Tersalin!`;
+
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          }
+        } catch (err) {
+          console.error("Gagal menyalin kode: ", err);
+        }
+      }
+
+      function toggleMateri() {
+        const content = document.getElementById("materiContent");
+        const toggleText = document.getElementById("toggleText");
+        const toggleIcon = document.getElementById("toggleIcon");
+
+        if (!content) return;
+        if (content.classList.contains("hidden")) {
+          content.classList.remove("hidden");
+          if (toggleText) toggleText.innerText = "Sembunyikan";
+          if (toggleIcon)
+            toggleIcon.className =
+              "ri-arrow-up-s-line text-base transition-transform duration-300";
+        } else {
+          content.classList.add("hidden");
+          if (toggleText) toggleText.innerText = "Tampilkan";
+          if (toggleIcon)
+            toggleIcon.className =
+              "ri-arrow-down-s-line text-base transition-transform duration-300";
+        }
+      }
+    </script>
+  </body>
+</html>

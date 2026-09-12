@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5.1 Simulasi Data & Chart.js - Web Programming 4.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap");
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+
+      .code-font {
+        font-family: "Fira Code", monospace;
+      }
+
+      .module-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+      }
+
+      .badge-number {
+        background: rgba(2, 132, 199, 0.08);
+        color: #0284c7;
+      }
+
+      .code-window {
+        background-color: #f8fafc;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid #cbd5e1;
+      }
+
+      .code-header {
+        background-color: #f1f5f9;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .code-tab {
+        background-color: #ffffff;
+        color: #0284c7;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.375rem 0.375rem 0 0;
+        border: 1px solid #e2e8f0;
+        border-bottom: none;
+        font-size: 0.8rem;
+        font-family: "Fira Code", monospace;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .browser-window {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        border: 1px solid #cbd5e1;
+        overflow: hidden;
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05);
+      }
+
+      .browser-header {
+        background-color: #f1f5f9;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen pb-16">
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+      <!-- HEADER -->
+      <header class="mb-6">
+        <div
+          class="flex items-center gap-2 text-xs font-mono mb-2 text-slate-500"
+        >
+          <p class="hover:underline hover:text-slate-700">Modul 07</p>
+          /
+          <span class="text-indigo-600 font-semibold"
+            >Persiapan Database Cloud</span
+          >
+        </div>
+        <h1
+          class="font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+        >
+          Merekam Riwayat Sensor & Menampilkan 5 Data Terakhir
+        </h1>
+        <p class="text-xs md:text-sm mt-1 text-slate-600">
+          Simulasi Array Data &amp; Grafik Chart.js
+          <code
+            class="bg-slate-200 text-indigo-700 px-1 py-0.5 rounded font-mono font-semibold"
+            >pushJSON()</code
+          >
+          Konsep dasar manipulasi tabel HTML dengan JS DOM dan visualisasi
+          grafik sebelum beralih ke Firebase Realtime Database.
+        </p>
+      </header>
+
+      <!-- SECTION 1: Simulasi Database & Render Tabel HTML via JS -->
+      <section class="module-card p-6 sm:p-8 space-y-6">
+        <div class="flex items-center gap-3">
+          <span
+            class="badge-number w-9 h-9 rounded-xl font-bold flex items-center justify-center text-sm"
+            >01</span
+          >
+          <h3 class="text-xl font-bold text-slate-800">
+            Render Baris Tabel (&lt;td&gt;) dengan JavaScript
+          </h3>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Pada HTML biasa, tag
+          <code class="code-font bg-slate-100 text-sky-700 px-1 py-0.5 rounded"
+            >&lt;tbody&gt;</code
+          >
+          dibiarkan kosong. JavaScript akan membaca Array of Objects (simulasi
+          database) lalu membuatkan elemen
+          <code class="code-font bg-slate-100 text-sky-700 px-1 py-0.5 rounded"
+            >&lt;tr&gt</code
+          >
+          dan
+          <code class="code-font bg-slate-100 text-sky-700 px-1 py-0.5 rounded"
+            >&lt;td&gt</code
+          >
+          secara dinamis.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Snippet Kode HTML + JS Utuh -->
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-tab">
+                <i class="fa-brands fa-html5 text-orange-500"></i>
+                latihan_tabel.html
+              </div>
+            </div>
+            <pre
+              class="p-4 text-xs code-font text-slate-800 bg-slate-50 leading-relaxed overflow-x-auto"
+            ><code><span class="text-indigo-600 font-semibold">&lt;table</span> <span class="text-amber-600">border</span>=<span class="text-emerald-600">"1"</span><span class="text-indigo-600 font-semibold">&gt;</span>
+  <span class="text-indigo-600 font-semibold">&lt;thead&gt;</span>
+    <span class="text-indigo-600 font-semibold">&lt;tr&gt;</span>
+      <span class="text-indigo-600 font-semibold">&lt;th&gt;</span>No<span class="text-indigo-600 font-semibold">&lt;/th&gt;</span>
+      <span class="text-indigo-600 font-semibold">&lt;th&gt;</span>Waktu<span class="text-indigo-600 font-semibold">&lt;/th&gt;</span>
+      <span class="text-indigo-600 font-semibold">&lt;th&gt;</span>Suhu (°C)<span class="text-indigo-600 font-semibold">&lt;/th&gt;</span>
+      <span class="text-indigo-600 font-semibold">&lt;th&gt;</span>Kelembapan (%)<span class="text-indigo-600 font-semibold">&lt;/th&gt;</span>
+    <span class="text-indigo-600 font-semibold">&lt;/tr&gt;</span>
+  <span class="text-indigo-600 font-semibold">&lt;/thead&gt;</span>
+  <span class="text-slate-400">&lt;!-- Target penampung baris data --&gt;</span>
+  <span class="text-indigo-600 font-semibold">&lt;tbody</span> <span class="text-amber-600">id</span>=<span class="text-emerald-600">"dataTabel"</span><span class="text-indigo-600 font-semibold">&gt;&lt;/tbody&gt;</span>
+<span class="text-indigo-600 font-semibold">&lt;/table&gt;</span>
+
+<span class="text-indigo-600 font-semibold">&lt;script&gt;</span>
+  <span class="text-slate-400">// 1. Simulasi Database Array</span>
+  <span class="text-indigo-600 font-semibold">const</span> dbSensor = [
+    { waktu: <span class="text-emerald-600">"08:00"</span>, suhu: <span class="text-amber-600">27.5</span>, kelembapan: <span class="text-amber-600">65</span> },
+    { waktu: <span class="text-emerald-600">"08:05"</span>, suhu: <span class="text-amber-600">29.1</span>, kelembapan: <span class="text-amber-600">62</span> },
+    { waktu: <span class="text-emerald-600">"08:10"</span>, suhu: <span class="text-amber-600">32.8</span>, kelembapan: <span class="text-amber-600">58</span> },
+    { waktu: <span class="text-emerald-600">"08:15"</span>, suhu: <span class="text-amber-600">30.2</span>, kelembapan: <span class="text-amber-600">60</span> },
+    { waktu: <span class="text-emerald-600">"08:20"</span>, suhu: <span class="text-amber-600">28.4</span>, kelembapan: <span class="text-amber-600">63</span> }
+  ];
+
+  <span class="text-slate-400">// 2. Ambil elemen tbody</span>
+  <span class="text-indigo-600 font-semibold">const</span> tbody = document.getElementById(<span class="text-emerald-600">"dataTabel"</span>);
+
+  <span class="text-slate-400">// 3. Perulangan untuk membuat tag &lt;td&gt;</span>
+  dbSensor.forEach((item, index) => {
+    tbody.innerHTML += <span class="text-emerald-600">`
+      &lt;tr&gt;
+        &lt;td&gt;${index + 1}&lt;/td&gt;
+        &lt;td&gt;${item.waktu}&lt;/td&gt;
+        &lt;td&gt;${item.suhu} °C&lt;/td&gt;
+        &lt;td&gt;${item.kelembapan} %&lt;/td&gt;
+      &lt;/tr&gt;
+    `</span>;
+  });
+<span class="text-indigo-600 font-semibold">&lt;/script&gt;</span></code></pre>
+          </div>
+
+          <!-- Output Browser Demo -->
+          <div class="browser-window flex flex-col">
+            <div class="browser-header">
+              <span class="text-xs font-bold text-slate-600">
+                <i class="fa-solid fa-table text-sky-600 mr-1"></i> Preview
+                Tampilan Browser
+              </span>
+            </div>
+            <div class="p-4 bg-white flex-grow">
+              <div class="overflow-x-auto rounded-lg border border-slate-200">
+                <table class="w-full text-left text-xs">
+                  <thead
+                    class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200"
+                  >
+                    <tr>
+                      <th class="p-2.5">No</th>
+                      <th class="p-2.5">Waktu</th>
+                      <th class="p-2.5">Suhu (°C)</th>
+                      <th class="p-2.5">Kelembapan (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    id="demoTableBody"
+                    class="divide-y divide-slate-100 text-slate-700"
+                  >
+                    <!-- Ditampilkan via JS interaktif -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Integrasi Canvas HTML & Chart.js -->
+      <section class="module-card p-6 sm:p-8 space-y-6">
+        <div class="flex items-center gap-3">
+          <span
+            class="badge-number w-9 h-9 rounded-xl font-bold flex items-center justify-center text-sm"
+            >02</span
+          >
+          <h3 class="text-xl font-bold text-slate-800">
+            Membuat Grafik dengan Elemen &lt;canvas&gt; &amp; Chart.js
+          </h3>
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Chart.js membutuhkan tag HTML
+          <code class="code-font bg-slate-100 text-sky-700 px-1 py-0.5 rounded"
+            >&lt;canvas&gt;</code
+          >
+          sebagai wadah gambar grafik. Library Chart.js dimuat menggunakan CDN
+          pada bagian header HTML.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Snippet Kode Chart Utuh -->
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-tab">
+                <i class="fa-brands fa-html5 text-orange-500"></i>
+                latihan_chart.html
+              </div>
+            </div>
+            <pre
+              class="p-4 text-xs code-font text-slate-800 bg-slate-50 leading-relaxed overflow-x-auto"
+            ><code><span class="text-slate-400">&lt;!-- 1. Include Library Chart.js di head/body --&gt;</span>
+<span class="text-indigo-600 font-semibold">&lt;script</span> <span class="text-amber-600">src</span>=<span class="text-emerald-600">"https://cdn.jsdelivr.net/npm/chart.js"</span><span class="text-indigo-600 font-semibold">&gt;&lt;/script&gt;</span>
+
+<span class="text-slate-400">&lt;!-- 2. Tag HTML Canvas tempat grafik digambar --&gt;</span>
+<span class="text-indigo-600 font-semibold">&lt;div&gt;</span>
+  <span class="text-indigo-600 font-semibold">&lt;canvas</span> <span class="text-amber-600">id</span>=<span class="text-emerald-600">"grafikSuhu"</span><span class="text-indigo-600 font-semibold">&gt;&lt;/canvas&gt;</span>
+<span class="text-indigo-600 font-semibold">&lt;/div&gt;</span>
+
+<span class="text-indigo-600 font-semibold">&lt;script&gt;</span>
+  <span class="text-slate-400">// 1. Database Simulasi Array</span>
+  <span class="text-indigo-600 font-semibold">const</span> dbSensor = [
+    { waktu: <span class="text-emerald-600">"08:00"</span>, suhu: <span class="text-amber-600">27.5</span>, kelembapan: <span class="text-amber-600">65</span> },
+    { waktu: <span class="text-emerald-600">"08:05"</span>, suhu: <span class="text-amber-600">29.1</span>, kelembapan: <span class="text-amber-600">62</span> },
+    { waktu: <span class="text-emerald-600">"08:10"</span>, suhu: <span class="text-amber-600">32.8</span>, kelembapan: <span class="text-amber-600">58</span> },
+    { waktu: <span class="text-emerald-600">"08:15"</span>, suhu: <span class="text-amber-600">30.2</span>, kelembapan: <span class="text-amber-600">60</span> },
+    { waktu: <span class="text-emerald-600">"08:20"</span>, suhu: <span class="text-amber-600">28.4</span>, kelembapan: <span class="text-amber-600">63</span> }
+  ];
+
+  <span class="text-slate-400">// 2. Ekstrak data dari Array DB Simulasi</span>
+  <span class="text-indigo-600 font-semibold">const</span> labelJam = dbSensor.map(row =&gt; row.waktu);
+  <span class="text-indigo-600 font-semibold">const</span> nilaiSuhu = dbSensor.map(row =&gt; row.suhu);
+
+  <span class="text-slate-400">// 3. Hubungkan dengan Canvas ID</span>
+  <span class="text-indigo-600 font-semibold">const</span> ctx = document.getElementById(<span class="text-emerald-600">'grafikSuhu'</span>);
+  
+  <span class="text-indigo-600 font-semibold">new</span> Chart(ctx, {
+    type: <span class="text-emerald-600">'line'</span>,
+    data: {
+      labels: labelJam,
+      datasets: [{
+        label: <span class="text-emerald-600">'Suhu Telemetri'</span>,
+        data: nilaiSuhu,
+        borderColor: <span class="text-emerald-600">'#0284c7'</span>
+      }]
+    }
+  });
+<span class="text-indigo-600 font-semibold">&lt;/script&gt;</span></code></pre>
+          </div>
+
+          <!-- Chart Output Demo -->
+          <div class="browser-window flex flex-col">
+            <div class="browser-header">
+              <span class="text-xs font-bold text-slate-600">
+                <i class="fa-solid fa-chart-area text-emerald-600 mr-1"></i>
+                Output Grafik
+              </span>
+            </div>
+            <div class="p-4 bg-white flex-grow">
+              <canvas id="sensorChart" class="w-full max-h-60"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Home
+        </a>
+        <a
+          href="7.2.html"
+          class="text-xs font-semibold px-4 py-2 rounded-lg text-white transition flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+        >
+          Modul 7.2 <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </main>
+
+    <!-- Script Interaktif untuk Demo Browser -->
+    <script>
+      const dbSensor = [
+        { waktu: "08:00", suhu: 27.5, kelembapan: 65 },
+        { waktu: "08:05", suhu: 29.1, kelembapan: 62 },
+        { waktu: "08:10", suhu: 32.8, kelembapan: 58 },
+        { waktu: "08:15", suhu: 30.2, kelembapan: 60 },
+        { waktu: "08:20", suhu: 28.4, kelembapan: 63 },
+      ];
+
+      // 1. Render data ke Tabel Preview (No, Waktu, Suhu, Kelembapan)
+      const tbody = document.getElementById("demoTableBody");
+      dbSensor.forEach((data, index) => {
+        const row = document.createElement("tr");
+        row.className = "hover:bg-slate-50";
+        row.innerHTML = `
+          <td class="p-2.5 code-font">${index + 1}</td>
+          <td class="p-2.5 code-font">${data.waktu}</td>
+          <td class="p-2.5 font-bold text-sky-600 code-font">${data.suhu} °C</td>
+          <td class="p-2.5 font-bold text-emerald-600 code-font">${data.kelembapan} %</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // 2. Render data ke Grafik Preview
+      const labelJam = dbSensor.map((item) => item.waktu);
+      const nilaiSuhu = dbSensor.map((item) => item.suhu);
+
+      const ctx = document.getElementById("sensorChart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labelJam,
+          datasets: [
+            {
+              label: "Suhu Sensor (°C)",
+              data: nilaiSuhu,
+              borderColor: "#0284c7",
+              backgroundColor: "rgba(2, 132, 199, 0.1)",
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              suggestedMin: 25,
+              suggestedMax: 35,
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

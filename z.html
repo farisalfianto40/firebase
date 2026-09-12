@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <table id="tabelContainer"></table>
+    <script>
+      const dataSensor = [
+        { waktu: "08:00 WIB", suhu: 28.5, kelembapan: 70 },
+        { waktu: "08:05 WIB", suhu: 29.2, kelembapan: 68 },
+      ];
+
+      const htmlTabel = `
+  <table border="1">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Waktu</th>
+        <th>Suhu (°C)</th>
+        <th>Kelembapan (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${dataSensor
+        .map(
+          (item, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.waktu}</td>
+          <td>${item.suhu}</td>
+          <td>${item.kelembapan}</td>
+        </tr>
+      `,
+        )
+        .join("")}
+    </tbody>
+  </table>
+`;
+
+      // Render langsung ke container
+      document.getElementById("tabelContainer").innerHTML = htmlTabel;
+    </script>
+  </body>
+</html>

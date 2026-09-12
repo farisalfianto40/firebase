@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modul 04: Monitoring IoT Suhu & Kelembapan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Remix Icon Library -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --primary: #4f46e5;
+        --emerald: #059669;
+        --sky: #0284c7;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .pulse-dot {
+        position: relative;
+      }
+      .pulse-dot::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 9999px;
+        border: 2px solid var(--emerald);
+        animation: ring 1.8s ease-out infinite;
+      }
+      @keyframes ring {
+        0% {
+          transform: scale(0.6);
+          opacity: 0.9;
+        }
+        100% {
+          transform: scale(1.9);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="antialiased min-h-screen flex flex-col bg-slate-50 text-slate-800"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 pt-10 pb-12 px-6 max-w-7xl mx-auto w-full">
+      <!-- BREADCRUMB & HEADER -->
+      <div class="mb-6">
+        <div
+          class="flex items-center gap-2 text-xs font-mono mb-2 text-slate-500"
+        >
+          <p class="hover:underline hover:text-slate-700">Modul 04</p>
+          /
+          <span class="text-indigo-600 font-semibold"
+            >IoT & Firebase Realtime DB</span
+          >
+        </div>
+        <h1 class="font-display text-2xl md:text-3xl font-bold text-slate-900">
+          Pengantar IoT & Firebase Realtime DB
+        </h1>
+        <p class="text-xs md:text-sm mt-1 text-slate-600">
+          Memahami konsep dasar Internet of Things (IoT), arsitektur komunikasi
+          sensor-ke-cloud, dan cara kerja Firebase Realtime Database.
+        </p>
+      </div>
+
+      <!-- CONTENT STACK -->
+      <div class="space-y-6">
+        <!-- CARD 1: Konsep Dasar IoT -->
+        <section
+          class="rounded-2xl p-5 border border-slate-200/80 bg-white shadow-xs"
+        >
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-white font-mono font-bold text-xs bg-indigo-600"
+              >1</span
+            >
+            <h2 class="font-display text-lg font-bold text-slate-900">
+              Apa itu Internet of Things (IoT)?
+            </h2>
+          </div>
+
+          <p class="text-xs text-slate-600 leading-relaxed mb-4">
+            <strong>Internet of Things (IoT)</strong> adalah jaringan perangkat
+            fisik ("things") yang tertanam dengan sensor, perangkat lunak, dan
+            teknologi lain dengan tujuan menghubungkan dan mempertukarkan data
+            dengan perangkat dan sistem lain melalui internet.
+          </p>
+
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div
+              class="p-3.5 rounded-xl border border-slate-200/60 bg-slate-50/50"
+            >
+              <p
+                class="font-semibold text-xs mb-1 flex items-center gap-1.5 text-slate-800"
+              >
+                <i class="ri-cpu-line text-indigo-600"></i> Perangkat/Hardware
+              </p>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Mikrokontroler seperti <strong>ESP32</strong> yang membaca data
+                fisik via sensor (suhu dan kelembapan).
+              </p>
+            </div>
+            <div
+              class="p-3.5 rounded-xl border border-slate-200/60 bg-slate-50/50"
+            >
+              <p
+                class="font-semibold text-xs mb-1 flex items-center gap-1.5 text-slate-800"
+              >
+                <i class="ri-cloud-line text-sky-600"></i> Cloud / Database
+              </p>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Layanan backend seperti
+                <strong>Firebase Realtime DB</strong> untuk menyimpan dan
+                mendistribusikan data secara instant.
+              </p>
+            </div>
+            <div
+              class="p-3.5 rounded-xl border border-slate-200/60 bg-slate-50/50"
+            >
+              <p
+                class="font-semibold text-xs mb-1 flex items-center gap-1.5 text-slate-800"
+              >
+                <i class="ri-dashboard-3-line text-indigo-600"></i> Web
+                Dashboard
+              </p>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Antarmuka pengguna (UI) berbasis HTML/JS untuk monitoring angka
+                dan grafik telemetri real-time.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- INTERACTIVE SIMULATOR -->
+        <section
+          class="rounded-2xl border border-slate-200/80 p-5 shadow-xs bg-white"
+        >
+          <!-- Header Status Bar -->
+          <div
+            class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200/80 mb-4"
+          >
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+              <h3 class="font-display font-bold text-sm text-slate-900">
+                Simulator Alur IoT & Dashboard Realtime
+              </h3>
+            </div>
+            <div class="flex items-center gap-3">
+              <label
+                class="flex items-center gap-1.5 text-xs font-mono text-slate-600 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  id="autoStreamCheck"
+                  class="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5 border-slate-300"
+                />
+                Auto-Stream (2s)
+              </label>
+              <span
+                class="flex items-center gap-1.5 text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80"
+              >
+                <span
+                  class="pulse-dot w-1.5 h-1.5 rounded-full bg-emerald-600"
+                ></span>
+                Connected
+              </span>
+            </div>
+          </div>
+
+          <!-- GRID 3 KOLOM -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4 items-stretch">
+            <!-- KOLOM 1: SIMULATOR HARDWARE & DB -->
+            <div class="lg:col-span-1 flex flex-col gap-3 h-full">
+              <!-- ATAS: Firebase Realtime DB State -->
+              <div
+                id="dbNode"
+                class="rounded-xl p-3.5 border border-slate-200 bg-slate-50/60 text-slate-800 transition-all duration-300 flex-1 flex flex-col justify-between"
+              >
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center gap-1.5 text-slate-800">
+                      <i class="ri-cloud-line text-sky-600 text-xs"></i>
+                      <span class="font-mono text-xs font-bold"
+                        >1. Firebase Realtime DB</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-mono bg-sky-50 text-sky-700 border border-sky-200 px-1.5 py-0.5 rounded font-medium"
+                    >
+                      JSON Tree
+                    </span>
+                  </div>
+
+                  <!-- Light JSON Box -->
+                  <pre
+                    id="jsonDisplay"
+                    class="font-mono text-[10px] text-indigo-950 leading-tight font-medium bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 shadow-inner overflow-x-auto"
+                  >
+{
+  "device": {
+    "suhu": 28.5,
+    "kelembapan": 65,
+    "updatedAt": "--:--:--"
+  }
+}</pre
+                  >
+                </div>
+
+                <div
+                  class="mt-2 text-center text-[9px] font-mono text-slate-500 flex items-center justify-center gap-1"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+                  ></span>
+                  WebSocket Active
+                </div>
+              </div>
+
+              <!-- BAWAH: Node ESP32 Hardware Simulator -->
+              <div
+                class="rounded-xl p-3.5 border border-slate-200/80 bg-slate-50/40 flex-1 flex flex-col justify-between"
+              >
+                <div>
+                  <div class="flex justify-between items-center mb-2.5">
+                    <div class="flex items-center gap-1.5 text-slate-800">
+                      <i class="ri-cpu-line text-indigo-600 text-xs"></i>
+                      <span class="font-mono text-xs font-bold"
+                        >2. Node ESP32</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-mono bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-medium border border-indigo-100"
+                    >
+                      Sensors
+                    </span>
+                  </div>
+
+                  <div class="space-y-2.5">
+                    <!-- Control Suhu -->
+                    <div
+                      class="bg-white p-2.5 rounded-lg border border-slate-200/70 shadow-2xs"
+                    >
+                      <div class="flex justify-between text-xs mb-1">
+                        <span
+                          class="text-slate-600 text-[10px] font-medium flex items-center gap-1"
+                        >
+                          <i class="ri-temp-hot-line text-emerald-600"></i>
+                          Suhu:
+                        </span>
+                        <span
+                          id="simTempText"
+                          class="font-mono font-bold text-emerald-700 text-[11px]"
+                          >28.5 °C</span
+                        >
+                      </div>
+                      <input
+                        type="range"
+                        id="simTempRange"
+                        min="18"
+                        max="45"
+                        step="0.5"
+                        value="28.5"
+                        class="w-full accent-emerald-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+                      />
+                    </div>
+
+                    <!-- Control Kelembapan -->
+                    <div
+                      class="bg-white p-2.5 rounded-lg border border-slate-200/70 shadow-2xs"
+                    >
+                      <div class="flex justify-between text-xs mb-1">
+                        <span
+                          class="text-slate-600 text-[10px] font-medium flex items-center gap-1"
+                        >
+                          <i class="ri-drop-line text-sky-600"></i> Kelembapan:
+                        </span>
+                        <span
+                          id="simHumText"
+                          class="font-mono font-bold text-sky-700 text-[11px]"
+                          >65 %</span
+                        >
+                      </div>
+                      <input
+                        type="range"
+                        id="simHumRange"
+                        min="20"
+                        max="95"
+                        step="1"
+                        value="65"
+                        class="w-full accent-sky-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3 pt-2.5 border-t border-slate-200/70">
+                  <button
+                    id="simSendBtn"
+                    class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg shadow-2xs transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <i class="ri-send-plane-fill text-xs"></i> Kirim Payload
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- KOLOM 2: WEBSITE DASHBOARD UI -->
+            <div
+              id="uiNode"
+              class="lg:col-span-2 rounded-xl p-4 border border-slate-200/90 bg-white text-slate-800 transition-all duration-300 flex flex-col justify-between shadow-xs relative h-full"
+            >
+              <div>
+                <!-- Header Bar SmartHome -->
+                <div
+                  class="flex justify-between items-center pb-2.5 border-b border-slate-200/80 mb-3"
+                >
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                    ></div>
+                    <div>
+                      <div class="flex items-center gap-1.5 text-slate-900">
+                        <i class="ri-window-line text-indigo-600 text-xs"></i>
+                        <span class="font-mono text-xs font-bold"
+                          >3. Website Dashboard</span
+                        >
+                      </div>
+                      <span
+                        class="text-[8px] font-mono tracking-widest uppercase text-slate-400 font-semibold block mt-0.5"
+                        >ENVIRONMENT MONITORING v2.4 — LivingRoom_01</span
+                      >
+                    </div>
+                  </div>
+                  <span
+                    id="uiStatusBadge"
+                    class="text-[9px] font-mono bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 rounded-full font-medium"
+                  >
+                    Optimal
+                  </span>
+                </div>
+
+                <!-- KPI Metric Cards Grid -->
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                  <!-- Card Suhu -->
+                  <div
+                    class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/70"
+                  >
+                    <div class="flex justify-between items-center mb-0.5">
+                      <span
+                        class="text-[9px] font-mono tracking-wider uppercase text-slate-500 font-medium"
+                        >TEMPERATURE</span
+                      >
+                      <i class="ri-temp-hot-line text-emerald-600 text-xs"></i>
+                    </div>
+                    <div class="flex items-baseline gap-1 my-0.5">
+                      <span
+                        id="uiTemp"
+                        class="font-mono text-2xl font-bold text-slate-800 tracking-tight"
+                        >28.5</span
+                      >
+                      <span class="text-[10px] font-mono text-slate-500"
+                        >°C</span
+                      >
+                    </div>
+                    <div
+                      class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mt-1.5"
+                    >
+                      <div
+                        id="uiTempBar"
+                        class="bg-emerald-600 h-full transition-all duration-500"
+                        style="width: 50%"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <!-- Card Kelembapan -->
+                  <div
+                    class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/70"
+                  >
+                    <div class="flex justify-between items-center mb-0.5">
+                      <span
+                        class="text-[9px] font-mono tracking-wider uppercase text-slate-500 font-medium"
+                        >HUMIDITY</span
+                      >
+                      <i class="ri-drop-line text-sky-600 text-xs"></i>
+                    </div>
+                    <div class="flex items-baseline gap-1 my-0.5">
+                      <span
+                        id="uiHum"
+                        class="font-mono text-2xl font-bold text-slate-800 tracking-tight"
+                        >65</span
+                      >
+                      <span class="text-[10px] font-mono text-slate-500"
+                        >%RH</span
+                      >
+                    </div>
+                    <div
+                      class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden mt-1.5"
+                    >
+                      <div
+                        id="uiHumBar"
+                        class="bg-sky-600 h-full transition-all duration-500"
+                        style="width: 65%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Live Charts Stacked -->
+                <div class="space-y-3">
+                  <!-- Chart 1: Temperature -->
+                  <div
+                    class="bg-slate-50/50 border border-slate-200/70 rounded-lg p-2.5"
+                  >
+                    <div class="flex justify-between items-center mb-1">
+                      <span
+                        class="text-[9px] font-mono uppercase text-emerald-700 font-semibold flex items-center gap-1"
+                      >
+                        <i class="ri-temp-hot-line text-emerald-600"></i> Grafik
+                        Temperatur (°C)
+                      </span>
+                    </div>
+                    <div class="h-32 w-full">
+                      <canvas id="tempChart"></canvas>
+                    </div>
+                  </div>
+
+                  <!-- Chart 2: Humidity -->
+                  <div
+                    class="bg-slate-50/50 border border-slate-200/70 rounded-lg p-2.5"
+                  >
+                    <div class="flex justify-between items-center mb-1">
+                      <span
+                        class="text-[9px] font-mono uppercase text-sky-700 font-semibold flex items-center gap-1"
+                      >
+                        <i class="ri-drop-line text-sky-600"></i> Grafik
+                        Kelembapan (%)
+                      </span>
+                    </div>
+                    <div class="h-32 w-full">
+                      <canvas id="humChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dashboard Footer Metadata -->
+              <div
+                class="mt-3 pt-2.5 border-t border-slate-200/80 flex justify-between items-center text-[9px] font-mono text-slate-500"
+              >
+                <span
+                  >updatedAt:
+                  <span id="uiLastUpdate" class="text-indigo-600 font-semibold"
+                    >--:--:--</span
+                  ></span
+                >
+                <span
+                  class="text-emerald-600 font-medium flex items-center gap-1"
+                >
+                  <i class="ri-pulse-line"></i> Firebase Sync Active
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Console Log Stream (Light Mode Console) -->
+          <div class="pt-2 border-t border-slate-200/80">
+            <div
+              class="flex justify-between items-center mb-1.5 text-[10px] font-mono text-slate-500"
+            >
+              <span
+                class="font-medium flex items-center gap-1.5 text-slate-700"
+              >
+                <i class="ri-terminal-box-line text-indigo-600"></i> Terminal
+                Log Stream:
+              </span>
+              <button
+                id="clearLogBtn"
+                class="text-slate-500 hover:text-slate-800 hover:underline flex items-center gap-0.5"
+              >
+                <i class="ri-delete-bin-line"></i> Clear
+              </button>
+            </div>
+            <div
+              id="consoleLog"
+              class="bg-slate-100 border border-slate-200 rounded-lg p-2.5 font-mono text-[9px] text-slate-800 h-20 overflow-y-auto space-y-1 shadow-inner"
+            >
+              <p class="text-slate-500">
+                [System] Inisialisasi Modul IoT Simulator SMTI Selesai.
+              </p>
+              <p class="text-indigo-600 font-medium">
+                [WS Connect] WebSocket ke Firebase DB terhubung aktif.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 2: Struktur Data NoSQL vs SQL -->
+        <section
+          class="rounded-2xl p-5 border border-slate-200/80 bg-white shadow-xs"
+        >
+          <div class="flex items-center gap-3 mb-3">
+            <span
+              class="w-7 h-7 rounded-lg flex items-center justify-center text-white font-mono font-bold text-xs bg-indigo-600"
+              >2</span
+            >
+            <h2 class="font-display text-lg font-bold text-slate-900">
+              Struktur Data: NoSQL JSON Tree
+            </h2>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3 font-mono text-xs">
+            <div
+              class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800"
+            >
+              <p
+                class="text-rose-600 font-semibold mb-2 font-sans text-xs flex items-center gap-1"
+              >
+                <i class="ri-close-circle-fill text-rose-500"></i> Tabel SQL
+                (Relasional)
+              </p>
+              <table class="w-full text-left text-[10px] border-collapse">
+                <tr
+                  class="border-b border-slate-300 text-slate-500 font-semibold"
+                >
+                  <th class="py-1">id</th>
+                  <th class="py-1">sensor</th>
+                  <th class="py-1">nilai</th>
+                </tr>
+                <tr class="border-b border-slate-200">
+                  <td class="py-1">1</td>
+                  <td class="py-1">suhu</td>
+                  <td class="py-1">28.5</td>
+                </tr>
+                <tr>
+                  <td class="py-1">2</td>
+                  <td class="py-1">kelembapan</td>
+                  <td class="py-1">65.0</td>
+                </tr>
+              </table>
+            </div>
+
+            <div
+              class="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-100 text-slate-800"
+            >
+              <p
+                class="text-indigo-700 font-semibold mb-2 font-sans text-xs flex items-center gap-1"
+              >
+                <i class="ri-checkbox-circle-fill text-indigo-600"></i> Firebase
+                JSON Tree (NoSQL)
+              </p>
+              <pre class="text-[10px] leading-tight font-medium text-slate-800">
+{
+  "device": {
+    "suhu": 28.5,
+    "kelembapan": 65
+  }
+}</pre
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Home
+        </a>
+      </div>
+    </main>
+
+    <!-- SCRIPT SIMULATOR & CHART.JS -->
+    <script>
+      // DOM Elements
+      const rangeTemp = document.getElementById("simTempRange");
+      const rangeHum = document.getElementById("simHumRange");
+      const textTemp = document.getElementById("simTempText");
+      const textHum = document.getElementById("simHumText");
+      const btnSend = document.getElementById("simSendBtn");
+      const autoStreamCheck = document.getElementById("autoStreamCheck");
+
+      const dbNode = document.getElementById("dbNode");
+      const jsonDisplay = document.getElementById("jsonDisplay");
+
+      const uiNode = document.getElementById("uiNode");
+      const uiTemp = document.getElementById("uiTemp");
+      const uiHum = document.getElementById("uiHum");
+      const uiTempBar = document.getElementById("uiTempBar");
+      const uiHumBar = document.getElementById("uiHumBar");
+
+      const uiStatusBadge = document.getElementById("uiStatusBadge");
+      const uiLastUpdate = document.getElementById("uiLastUpdate");
+
+      const consoleLog = document.getElementById("consoleLog");
+      const clearLogBtn = document.getElementById("clearLogBtn");
+
+      let autoInterval = null;
+
+      // Chart Options Softer Colors dengan Sumbu X (Time) Aktif
+      const commonChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            display: true,
+            grid: { color: "#f1f5f9" },
+            ticks: {
+              color: "#64748b",
+              font: { size: 9, family: "JetBrains Mono" },
+            },
+            title: {
+              display: true,
+              text: "Waktu (Time)",
+              color: "#94a3b8",
+              font: { size: 9, weight: "500" },
+            },
+          },
+          y: {
+            beginAtZero: true,
+            min: 0,
+            grid: { color: "#f1f5f9" },
+            ticks: { color: "#94a3b8", font: { size: 8 } },
+          },
+        },
+        plugins: {
+          legend: { display: false },
+        },
+      };
+
+      // 1. Chart Temperature
+      const tempCtx = document.getElementById("tempChart").getContext("2d");
+      const tempChart = new Chart(tempCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Suhu (°C)",
+              data: [],
+              borderColor: "#059669",
+              backgroundColor: "rgba(5, 150, 105, 0.08)",
+              borderWidth: 2,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 2,
+              pointBackgroundColor: "#059669",
+            },
+          ],
+        },
+        options: commonChartOptions,
+      });
+
+      // 2. Chart Humidity
+      const humCtx = document.getElementById("humChart").getContext("2d");
+      const humChart = new Chart(humCtx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Kelembapan (%)",
+              data: [],
+              borderColor: "#0284c7",
+              backgroundColor: "rgba(2, 132, 199, 0.08)",
+              borderWidth: 2,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 2,
+              pointBackgroundColor: "#0284c7",
+            },
+          ],
+        },
+        options: commonChartOptions,
+      });
+
+      function addDataToChart(label, temp, hum) {
+        if (tempChart.data.labels.length >= 8) {
+          tempChart.data.labels.shift();
+          tempChart.data.datasets[0].data.shift();
+
+          humChart.data.labels.shift();
+          humChart.data.datasets[0].data.shift();
+        }
+
+        tempChart.data.labels.push(label);
+        tempChart.data.datasets[0].data.push(temp);
+        tempChart.update();
+
+        humChart.data.labels.push(label);
+        humChart.data.datasets[0].data.push(hum);
+        humChart.update();
+      }
+
+      rangeTemp.addEventListener("input", (e) => {
+        textTemp.textContent = e.target.value + " °C";
+      });
+
+      rangeHum.addEventListener("input", (e) => {
+        textHum.textContent = e.target.value + " %";
+      });
+
+      function addLog(msg, colorClass = "text-slate-700") {
+        const time = new Date().toLocaleTimeString("id-ID");
+        const p = document.createElement("p");
+        p.className = colorClass;
+        p.textContent = `[${time}] ${msg}`;
+        consoleLog.appendChild(p);
+        consoleLog.scrollTop = consoleLog.scrollHeight;
+      }
+
+      clearLogBtn.addEventListener("click", () => {
+        consoleLog.innerHTML =
+          '<p class="text-slate-500">[System] Log dibersihkan.</p>';
+      });
+
+      function sendDataPayload() {
+        const tempVal = parseFloat(rangeTemp.value).toFixed(1);
+        const humVal = parseInt(rangeHum.value);
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        addLog(
+          `ESP32 -> PUT /device {suhu: ${tempVal}, kelembapan: ${humVal}}`,
+          "text-indigo-600 font-medium",
+        );
+
+        setTimeout(() => {
+          jsonDisplay.textContent = `{\n  "device": {\n    "suhu": ${tempVal},\n    "kelembapan": ${humVal},\n    "updatedAt": "${timeStr}"\n  }\n}`;
+          dbNode.classList.add("ring-2", "ring-indigo-400");
+          addLog(
+            `Firebase DB -> Node '/device' diperbarui`,
+            "text-emerald-700 font-medium",
+          );
+
+          setTimeout(() => {
+            dbNode.classList.remove("ring-2", "ring-indigo-400");
+          }, 400);
+        }, 200);
+
+        setTimeout(() => {
+          uiTemp.textContent = tempVal;
+          uiHum.textContent = humVal;
+          uiLastUpdate.textContent = timeStr;
+
+          addDataToChart(timeStr, tempVal, humVal);
+
+          const tempPercent = Math.min(
+            Math.max(((tempVal - 15) / 30) * 100, 5),
+            100,
+          );
+          uiTempBar.style.width = `${tempPercent}%`;
+          uiHumBar.style.width = `${humVal}%`;
+
+          if (tempVal > 35) {
+            uiStatusBadge.textContent = "CRITICAL";
+            uiStatusBadge.className =
+              "text-[9px] font-mono bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full font-bold animate-pulse";
+          } else if (tempVal > 30) {
+            uiStatusBadge.textContent = "WARM";
+            uiStatusBadge.className =
+              "text-[9px] font-mono bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full font-semibold";
+          } else {
+            uiStatusBadge.textContent = "Optimal";
+            uiStatusBadge.className =
+              "text-[9px] font-mono bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-0.5 rounded-full font-medium";
+          }
+
+          uiNode.classList.add("ring-2", "ring-indigo-500/50");
+          addLog(
+            `Web UI -> Listener onValue() dipicu. UI diperbarui.`,
+            "text-slate-600",
+          );
+
+          setTimeout(
+            () => uiNode.classList.remove("ring-2", "ring-indigo-500/50"),
+            400,
+          );
+        }, 450);
+      }
+
+      sendDataPayload();
+
+      btnSend.addEventListener("click", sendDataPayload);
+
+      autoStreamCheck.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          addLog(
+            "[System] Auto-Stream diaktifkan (2s).",
+            "text-indigo-600 font-medium",
+          );
+          sendDataPayload();
+          autoInterval = setInterval(() => {
+            let currTemp = parseFloat(rangeTemp.value);
+            let delta = (Math.random() - 0.5) * 0.4;
+            let newTemp = Math.min(Math.max(currTemp + delta, 18), 45).toFixed(
+              1,
+            );
+            rangeTemp.value = newTemp;
+            textTemp.textContent = newTemp + " °C";
+
+            sendDataPayload();
+          }, 2000);
+        } else {
+          clearInterval(autoInterval);
+          addLog("[System] Auto-Stream dihentikan.", "text-slate-500");
+        }
+      });
+    </script>
+  </body>
+</html>

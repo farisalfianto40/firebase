@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modul 05: Konfigurasi Firebase Realtime DB</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Remix Icon Library -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+        color: #0f172a;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-code {
+        font-family: "JetBrains Mono", monospace;
+      }
+    </style>
+  </head>
+
+  <body
+    class="antialiased min-h-screen flex flex-col bg-slate-50 text-slate-800"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 pt-10 pb-12 px-6 max-w-7xl mx-auto w-full">
+      <!-- BREADCRUMB & HEADER -->
+      <div class="mb-8 border-b border-slate-200 pb-5">
+        <div
+          class="flex items-center gap-2 text-xs font-mono mb-2 text-slate-500"
+        >
+          <p class="hover:underline hover:text-slate-700">Modul 05</p>
+          /
+          <span class="text-indigo-600 font-semibold">Persiapan Firebase</span>
+        </div>
+        <h1
+          class="font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+        >
+          Langkah Kerja Membuat Database di Firebase
+        </h1>
+        <p class="text-xs md:text-sm mt-1 text-slate-600">
+          Panduan komprehensif penyiapan proyek, Realtime Database, aturan
+          keamanan, serta pengambilan kredensial untuk Web & ESP32. Klik pada
+          gambar untuk memperbesar.
+        </p>
+      </div>
+
+      <!-- KONTEN LANGKAH KERJA -->
+      <div class="space-y-8">
+        <!-- TAHAP 1 -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span
+              class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shadow-sm"
+              >A</span
+            >
+            <h2 class="font-display font-bold text-xl text-slate-900">
+              Tahap 1: Membuka & Membuat Proyek Firebase
+            </h2>
+          </div>
+
+          <div class="space-y-8">
+            <!-- Langkah 1 & 2 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >01 - 02</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Buka browser dan masuk ke situs resmi Firebase:
+                  <a
+                    href="https://firebase.google.com/"
+                    target="_blank"
+                    class="text-indigo-600 font-semibold underline"
+                    >https://firebase.google.com/</a
+                  >, kemudian klik tombol <strong>Get started</strong> di
+                  halaman utama.
+                </p>
+              </div>
+              <div
+                class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 group cursor-pointer"
+                onclick="openModal('img/2/2.1.png')"
+              >
+                <img
+                  src="img/2/2.1.png"
+                  alt="Langkah 1 & 2"
+                  class="w-full h-auto rounded-lg shadow-sm group-hover:opacity-95 transition"
+                />
+              </div>
+            </div>
+
+            <!-- Langkah 3 & 4 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >03 - 04</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Klik <strong>Create a project</strong>, beri nama proyek
+                  contoh:
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >latihaniot</code
+                  >, lalu centang persetujuan dan klik
+                  <strong>Continue</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.2.png')"
+                >
+                  <img
+                    src="img/2/2.2.png"
+                    alt="Langkah 3"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.3.png')"
+                >
+                  <img
+                    src="img/2/2.3.png"
+                    alt="Langkah 4"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 5 & 6 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >05 - 06</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Pada konfirmasi <strong>AI Assistant</strong> dan opsi
+                  <strong>Google Analytics</strong>, klik tombol
+                  <strong>Continue</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.4.png')"
+                >
+                  <img
+                    src="img/2/2.4.png"
+                    alt="Langkah 5"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.5.png')"
+                >
+                  <img
+                    src="img/2/2.5.png"
+                    alt="Langkah 6"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 7 & 8 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >07 - 08</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Pilih <strong>Default Account for Firebase</strong> pada
+                  konfigurasi Analytics, klik <strong>Create project</strong>,
+                  lalu klik <strong>Continue</strong> setelah proyek siap.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.6.png')"
+                >
+                  <img
+                    src="img/2/2.6.png"
+                    alt="Langkah 7"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.7.png')"
+                >
+                  <img
+                    src="img/2/2.7.png"
+                    alt="Langkah 8"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAHAP 2 -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span
+              class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shadow-sm"
+              >B</span
+            >
+            <h2 class="font-display font-bold text-xl text-slate-900">
+              Tahap 2: Menyiapkan Realtime Database & Struktur Data
+            </h2>
+          </div>
+
+          <div class="space-y-8">
+            <!-- Langkah 9 & 10 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >09 - 10</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Buka menu side-bar <strong>Build</strong> &rarr; pilih
+                  <strong>Realtime Database</strong>, lalu klik tombol
+                  <strong>Create Database</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.8.png')"
+                >
+                  <img
+                    src="img/2/2.8.png"
+                    alt="Langkah 9"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.9.png')"
+                >
+                  <img
+                    src="img/2/2.9.png"
+                    alt="Langkah 10"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 11 & 12 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >11 - 12</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Pilih opsi lokasi database default, lalu pilih mode keamanan
+                  <strong>Start in locked mode</strong> dan klik
+                  <strong>Enable</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.10.png')"
+                >
+                  <img
+                    src="img/2/2.10.png"
+                    alt="Langkah 11"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.11.png')"
+                >
+                  <img
+                    src="img/2/2.11.png"
+                    alt="Langkah 12"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 13 - 15 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >13 - 15</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Tambahkan Key utama (Parent Node)
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >dht11</code
+                  >
+                  dengan mengklik tombol <strong>+</strong>, lalu tambahkan
+                  Child Key
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >suhu</code
+                  >
+                  dengan Value
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-emerald-700 font-mono border border-slate-200"
+                    >27.20</code
+                  >.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.12.png')"
+                >
+                  <img
+                    src="img/2/2.12.png"
+                    alt="Langkah 13"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.13.png')"
+                >
+                  <img
+                    src="img/2/2.13.png"
+                    alt="Langkah 14"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.14.png')"
+                >
+                  <img
+                    src="img/2/2.14.png"
+                    alt="Langkah 15"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 16 & 17 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >16 - 17</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Klik ikon <strong>+</strong> pada node
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >dht11</code
+                  >
+                  untuk menambahkan Key kedua yaitu
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >kelembapan</code
+                  >
+                  dengan Value
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-sky-700 font-mono border border-slate-200"
+                    >75.50</code
+                  >, lalu klik <strong>Add</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.15.png')"
+                >
+                  <img
+                    src="img/2/2.15.png"
+                    alt="Langkah 16"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.16.png')"
+                >
+                  <img
+                    src="img/2/2.16.png"
+                    alt="Langkah 17"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAHAP 3 -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span
+              class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shadow-sm"
+              >C</span
+            >
+            <h2 class="font-display font-bold text-xl text-slate-900">
+              Tahap 3: Mengonfigurasi Aturan Keamanan (Database Rules)
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-start gap-3">
+              <span
+                class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                >18 - 19</span
+              >
+              <p class="text-sm text-slate-700 leading-relaxed">
+                Pilih tab <strong>Rules</strong>, ubah pengaturan
+                <code
+                  class="bg-slate-100 px-2 py-0.5 rounded text-rose-600 font-mono border border-slate-200"
+                  >".read"</code
+                >
+                dan
+                <code
+                  class="bg-slate-100 px-2 py-0.5 rounded text-rose-600 font-mono border border-slate-200"
+                  >".write"</code
+                >
+                menjadi
+                <code
+                  class="bg-indigo-50 px-2 py-0.5 rounded text-indigo-700 font-mono font-bold border border-indigo-100"
+                  >true</code
+                >, lalu klik tombol <strong>Publish</strong>.
+              </p>
+            </div>
+
+            <div
+              class="bg-slate-100 border border-slate-200 rounded-xl p-4 font-mono text-xs leading-relaxed text-slate-800"
+            >
+              <span class="text-slate-500"
+                >// Rules untuk Mode Pembelajaran/Praktikum:</span
+              ><br />
+              {<br />
+              &nbsp;&nbsp;<span class="text-amber-600 font-bold">"rules"</span>:
+              {<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-indigo-600"
+                >".read"</span
+              >: <span class="text-emerald-600 font-bold">true</span>,<br />
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-indigo-600"
+                >".write"</span
+              >: <span class="text-emerald-600 font-bold">true</span><br />
+              &nbsp;&nbsp;}<br />
+              }
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div
+                class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                onclick="openModal('img/2/2.17.png')"
+              >
+                <img
+                  src="img/2/2.17.png"
+                  alt="Langkah 18"
+                  class="w-full h-auto rounded-lg shadow-sm"
+                />
+              </div>
+              <div
+                class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                onclick="openModal('img/2/2.18.png')"
+              >
+                <img
+                  src="img/2/2.18.png"
+                  alt="Langkah 19"
+                  class="w-full h-auto rounded-lg shadow-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAHAP 4 -->
+        <div
+          class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span
+              class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shadow-sm"
+              >D</span
+            >
+            <h2 class="font-display font-bold text-xl text-slate-900">
+              Tahap 4: Registrasi Web App & Menyimpan Kredensial
+            </h2>
+          </div>
+
+          <div class="space-y-8">
+            <!-- Langkah 20 & 21 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >20 - 21</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Masuk ke menu <strong>Project Settings</strong> (ikon roda
+                  gigi) &rarr; tab <strong>General</strong>, lalu klik ikon
+                  <strong>Web (&lt;/&gt;)</strong> untuk menambah aplikasi web
+                  baru.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.19.png')"
+                >
+                  <img
+                    src="img/2/2.19.png"
+                    alt="Langkah 20"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.20.png')"
+                >
+                  <img
+                    src="img/2/2.20.png"
+                    alt="Langkah 21"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 22 & 23 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >22 - 23</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Isikan nama aplikasi contoh:
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >web-iot</code
+                  >, klik <strong>Register app</strong>, lalu salin
+                  konfigurasinya (<code
+                    class="bg-slate-100 px-1.5 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >firebaseConfig</code
+                  >) sebelum menekan <strong>Continue to console</strong>.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.21.png')"
+                >
+                  <img
+                    src="img/2/2.21.png"
+                    alt="Langkah 22"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.22.png')"
+                >
+                  <img
+                    src="img/2/2.22.png"
+                    alt="Langkah 23"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 24 - 26 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md border border-indigo-100 shrink-0"
+                  >24 - 26</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed">
+                  Pilih tab <strong>Service accounts</strong> &rarr;
+                  <strong>Database secrets</strong>, lalu salin kunci
+                  <strong>Database Secret</strong> untuk dihubungkan dengan
+                  ESP32 di Arduino IDE.
+                </p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.23.png')"
+                >
+                  <img
+                    src="img/2/2.23.png"
+                    alt="Langkah 24"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.24.png')"
+                >
+                  <img
+                    src="img/2/2.24.png"
+                    alt="Langkah 25"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div
+                  class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                  onclick="openModal('img/2/2.25.png')"
+                >
+                  <img
+                    src="img/2/2.25.png"
+                    alt="Langkah 26"
+                    class="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Langkah 27 & 28 -->
+            <div class="space-y-3">
+              <div class="flex items-start gap-3">
+                <span
+                  class="font-mono text-xs font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md border border-emerald-200 shrink-0"
+                  >27 - 28</span
+                >
+                <p class="text-sm text-slate-700 leading-relaxed font-semibold">
+                  Kembali ke laman Realtime Database, simpan URL Database
+                  (berakhiran
+                  <code
+                    class="bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-mono border border-slate-200"
+                    >.firebaseio.com</code
+                  >). Seluruh proses konfigurasi Firebase telah selesai!
+                </p>
+              </div>
+              <div
+                class="rounded-xl border border-slate-200 overflow-hidden bg-slate-50 p-2 cursor-pointer"
+                onclick="openModal('img/2/2.26.png')"
+              >
+                <img
+                  src="img/2/2.26.png"
+                  alt="Langkah 27"
+                  class="w-full h-auto rounded-lg shadow-sm"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RINGKASAN PARAMETER -->
+        <div
+          class="bg-amber-50/80 border border-amber-200 rounded-2xl p-6 space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-amber-900 font-display font-bold text-base"
+          >
+            <i class="ri-key-2-fill text-xl text-amber-600"></i>
+            <span>Ringkasan Parameter Penting yang Harus Dicatat:</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+            <div
+              class="bg-white p-4 rounded-xl border border-amber-200/80 space-y-1.5 shadow-xs"
+            >
+              <p class="font-sans font-bold text-slate-900 text-sm">
+                1. Untuk Program Web (<code class="text-indigo-600"
+                  >index.html</code
+                >)
+              </p>
+              <p class="text-slate-600">
+                &bull; apiKey: <span class="text-slate-400">"AIzaSy..."</span>
+              </p>
+              <p class="text-slate-600">
+                &bull; databaseURL:
+                <span class="text-slate-400">"https://...firebaseio.com"</span>
+              </p>
+              <p class="text-slate-600">
+                &bull; projectId:
+                <span class="text-slate-400">"latihaniot-..."</span>
+              </p>
+            </div>
+            <div
+              class="bg-white p-4 rounded-xl border border-amber-200/80 space-y-1.5 shadow-xs"
+            >
+              <p class="font-sans font-bold text-slate-900 text-sm">
+                2. Untuk Hardware ESP32 (<code class="text-teal-600">.ino</code
+                >)
+              </p>
+              <p class="text-slate-600">
+                &bull; DATABASE_URL:
+                <span class="text-slate-400">"https://...firebaseio.com"</span>
+              </p>
+              <p class="text-slate-600">
+                &bull; DATABASE_SECRET:
+                <span class="text-slate-400">"xYz123..."</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Home
+        </a>
+        <a
+          href="5.2.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border text-white bg-indigo-600 hover:bg-indigo-700 transition flex items-center gap-1 shadow-2xs"
+        >
+          <i class="ri-arrow-right-line"></i> Modul 5.2
+        </a>
+      </div>
+    </main>
+
+    <!-- MODAL POPUP UNTUK ZOOM GAMBAR -->
+    <div
+      id="imageModal"
+      class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+      onclick="closeModal()"
+    >
+      <div
+        class="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center"
+      >
+        <img
+          id="modalImg"
+          src=""
+          alt="Zoom Image"
+          class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain border border-slate-700"
+        />
+        <button
+          class="absolute -top-10 right-0 text-white hover:text-slate-300 font-bold text-xl flex items-center gap-1"
+        >
+          <i class="ri-close-line text-2xl"></i> Tutup
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function openModal(src) {
+        document.getElementById("modalImg").src = src;
+        document.getElementById("imageModal").classList.remove("hidden");
+      }
+      function closeModal() {
+        document.getElementById("imageModal").classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>
