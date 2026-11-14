@@ -1,47 +1,285 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Login - Portal Sistem IoT</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Remix Icon -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+    </style>
   </head>
-  <body>
-    <table id="tabelContainer"></table>
-    <script>
-      const dataSensor = [
-        { waktu: "08:00 WIB", suhu: 28.5, kelembapan: 70 },
-        { waktu: "08:05 WIB", suhu: 29.2, kelembapan: 68 },
-      ];
+  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div
+      class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden"
+    >
+      <!-- Header / Banner -->
+      <div class="bg-indigo-600 p-6 text-white text-center">
+        <div
+          class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3 text-2xl backdrop-blur-sm"
+        >
+          <i class="ri-cpu-line"></i>
+        </div>
+        <h1 class="font-display font-bold text-xl">SMK SMTI Yogyakarta</h1>
+        <p class="text-xs text-indigo-100 mt-1">
+          Portal Autentikasi Control Panel IoT
+        </p>
+      </div>
 
-      const htmlTabel = `
-  <table border="1">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Waktu</th>
-        <th>Suhu (°C)</th>
-        <th>Kelembapan (%)</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${dataSensor
-        .map(
-          (item, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${item.waktu}</td>
-          <td>${item.suhu}</td>
-          <td>${item.kelembapan}</td>
-        </tr>
-      `,
-        )
-        .join("")}
-    </tbody>
-  </table>
-`;
+      <!-- Form Container -->
+      <div class="p-6 space-y-4">
+        <!-- Tab Toggle -->
+        <div class="flex bg-slate-100 p-1 rounded-xl font-medium text-xs">
+          <button
+            id="tabLogin"
+            class="flex-1 py-2 rounded-lg bg-white text-indigo-600 font-semibold shadow-xs transition"
+          >
+            Masuk (Login)
+          </button>
+          <button
+            id="tabRegister"
+            class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition"
+          >
+            Daftar (Register)
+          </button>
+        </div>
 
-      // Render langsung ke container
-      document.getElementById("tabelContainer").innerHTML = htmlTabel;
+        <h2
+          id="formTitle"
+          class="font-display font-bold text-slate-800 text-sm"
+        >
+          Masuk ke Akun Anda
+        </h2>
+
+        <!-- Alert Notification -->
+        <div
+          id="alertBox"
+          class="hidden p-3 rounded-lg text-xs font-mono"
+        ></div>
+
+        <!-- Input Fields -->
+        <form id="authForm" onsubmit="return false;" class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1"
+              >Email</label
+            >
+            <div class="relative">
+              <i
+                class="ri-mail-line absolute left-3 top-2.5 text-slate-400"
+              ></i>
+              <input
+                type="email"
+                id="emailInput"
+                required
+                placeholder="operator@smk-smti.sch.id"
+                class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1"
+              >Password</label
+            >
+            <div class="relative">
+              <i
+                class="ri-lock-line absolute left-3 top-2.5 text-slate-400"
+              ></i>
+              <input
+                type="password"
+                id="passwordInput"
+                required
+                placeholder="••••••••"
+                class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            id="submitBtn"
+            class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2"
+          >
+            <i class="ri-login-circle-line"></i>
+            <span id="btnText">Masuk Sekarang</span>
+          </button>
+        </form>
+      </div>
+
+      <div
+        class="bg-slate-50 border-t border-slate-100 p-4 text-center text-[11px] text-slate-400"
+      >
+        Teknik Mekatronika &copy; 2026 - Internet of Things Module
+      </div>
+    </div>
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+      // --- SAMA DENGAN CONFIG FIREBASE ANDA ---
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+
+      let isModeLogin = true;
+
+      // Cek apakah pengguna sudah login, jika ya langsung arahkan ke dashboard
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          window.location.href = "dashboard.html";
+        }
+      });
+
+      // UI Element
+      const tabLogin = document.getElementById("tabLogin");
+      const tabRegister = document.getElementById("tabRegister");
+      const formTitle = document.getElementById("formTitle");
+      const btnText = document.getElementById("btnText");
+      const alertBox = document.getElementById("alertBox");
+      const authForm = document.getElementById("authForm");
+
+      tabLogin.addEventListener("click", () => {
+        isModeLogin = true;
+        tabLogin.className =
+          "flex-1 py-2 rounded-lg bg-white text-indigo-600 font-semibold shadow-xs transition";
+        tabRegister.className =
+          "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition";
+        formTitle.textContent = "Masuk ke Akun Anda";
+        btnText.textContent = "Masuk Sekarang";
+        hideAlert();
+      });
+
+      tabRegister.addEventListener("click", () => {
+        isModeLogin = false;
+        tabRegister.className =
+          "flex-1 py-2 rounded-lg bg-white text-indigo-600 font-semibold shadow-xs transition";
+        tabLogin.className =
+          "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition";
+        formTitle.textContent = "Daftar Akun Baru";
+        btnText.textContent = "Buat Akun";
+        hideAlert();
+      });
+
+      authForm.addEventListener("submit", async () => {
+        const email = document.getElementById("emailInput").value.trim();
+        const password = document.getElementById("passwordInput").value.trim();
+
+        if (!email || !password) {
+          showAlert("Email dan Password tidak boleh kosong!", "error");
+          return;
+        }
+
+        try {
+          if (isModeLogin) {
+            showAlert("Memproses login...", "info");
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = "dashboard.html";
+          } else {
+            showAlert("Membuat akun baru...", "info");
+            await createUserWithEmailAndPassword(auth, email, password);
+            showAlert(
+              "Registrasi berhasil! Mengalihkan ke dashboard...",
+              "success",
+            );
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 1000);
+          }
+        } catch (error) {
+          showAlert(formatFirebaseError(error.code), "error");
+        }
+      });
+
+      function showAlert(msg, type) {
+        alertBox.classList.remove(
+          "hidden",
+          "bg-rose-50",
+          "text-rose-700",
+          "border-rose-200",
+          "bg-emerald-50",
+          "text-emerald-700",
+          "border-emerald-200",
+          "bg-blue-50",
+          "text-blue-700",
+          "border-blue-200",
+        );
+        alertBox.classList.add("border");
+
+        if (type === "error") {
+          alertBox.classList.add(
+            "bg-rose-50",
+            "text-rose-700",
+            "border-rose-200",
+          );
+        } else if (type === "success") {
+          alertBox.classList.add(
+            "bg-emerald-50",
+            "text-emerald-700",
+            "border-emerald-200",
+          );
+        } else {
+          alertBox.classList.add(
+            "bg-blue-50",
+            "text-blue-700",
+            "border-blue-200",
+          );
+        }
+        alertBox.textContent = msg;
+      }
+
+      function hideAlert() {
+        alertBox.classList.add("hidden");
+      }
+
+      function formatFirebaseError(code) {
+        switch (code) {
+          case "auth/invalid-credential":
+          case "auth/wrong-password":
+          case "auth/user-not-found":
+            return "Email atau Password salah!";
+          case "auth/email-already-in-use":
+            return "Email ini sudah terdaftar!";
+          case "auth/weak-password":
+            return "Password terlalu lemah (min. 6 karakter).";
+          case "auth/invalid-email":
+            return "Format email tidak valid.";
+          default:
+            return "Terjadi kesalahan: " + code;
+        }
+      }
     </script>
   </body>
 </html>

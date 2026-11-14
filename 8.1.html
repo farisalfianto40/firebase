@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modul 08: Autentikasi Pengguna dengan Firebase</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Remix Icon Library -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+        --primary: #4f46e5;
+        --emerald: #059669;
+        --sky: #0284c7;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+      .font-display {
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .font-mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .code-block-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .code-block-item {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+      }
+      .code-block-item:hover {
+        background-color: #e0e7ff !important;
+        border-left-color: #818cf8;
+      }
+      .code-block-item.active-block {
+        background-color: #eef2ff !important;
+        border-left-color: #4f46e5 !important;
+        box-shadow: inset 0 0 0 1px #c7d2fe;
+      }
+    </style>
+  </head>
+  <body
+    class="antialiased min-h-screen flex flex-col bg-slate-50 text-slate-800"
+  >
+    <!-- NAVBAR -->
+    <nav
+      class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto h-16 px-4 md:px-6 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20"
+          >
+            <i class="ri-code-s-slash-line text-xl"></i>
+          </div>
+          <div>
+            <div
+              class="font-display font-bold text-slate-900 text-base leading-tight"
+            >
+              SMK SMTI Yogyakarta
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Internet of Things - Website & Firebase
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+        >
+          <i class="ri-book-open-line text-indigo-600"></i> Panduan Praktikum
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 pt-10 pb-12 px-6 max-w-7xl mx-auto w-full">
+      <!-- BREADCRUMB & HEADER -->
+      <div class="mb-8 border-b border-slate-200 pb-5">
+        <div
+          class="flex items-center gap-2 text-xs font-mono mb-2 text-slate-500"
+        >
+          <p class="hover:underline hover:text-slate-700">Modul 08</p>
+          /
+          <span class="text-indigo-600 font-semibold"
+            >Firebase Authentication</span
+          >
+        </div>
+        <h1
+          class="font-display text-2xl md:text-3xl font-bold text-slate-900 tracking-tight"
+        >
+          Autentikasi Pengguna & Keamanan Hak Akses
+        </h1>
+        <p class="text-xs md:text-sm mt-1 text-slate-600">
+          Memahami sistem login/register pengguna berbasis Email & Password
+          menggunakan Firebase Authentication, serta membatasi hak akses kontrol
+          dan dashboard IoT.
+        </p>
+      </div>
+
+      <!-- KONTEN MODUL -->
+      <div class="space-y-8">
+        <!-- CARD 1: Konsep Dasar Firebase Auth -->
+        <section
+          class="rounded-2xl p-6 border border-slate-200 bg-white shadow-xs space-y-4"
+        >
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <span
+              class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-mono font-bold text-sm flex items-center justify-center shadow-sm"
+            >
+              1
+            </span>
+            <h2 class="font-display font-bold text-xl text-slate-900">
+              Konsep Dasar Firebase Authentication
+            </h2>
+          </div>
+
+          <p class="text-xs md:text-sm text-slate-600 leading-relaxed">
+            <strong>Firebase Authentication</strong> menyediakan layanan backend
+            siap pakai untuk mengautentikasi pengguna pada aplikasi web dan IoT.
+            Dengan autentikasi, kita dapat mengamankan Realtime Database
+            sehingga hanya pengguna terverifikasi yang berhak membaca atau
+            mengontrol perangkat fisik.
+          </p>
+
+          <div class="grid sm:grid-cols-3 gap-4 pt-2">
+            <div
+              class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2"
+            >
+              <div
+                class="flex items-center gap-2 text-indigo-600 font-bold text-xs"
+              >
+                <i class="ri-user-add-line text-base"></i>
+                <span>Registrasi (Sign Up)</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Mendaftarkan akun baru menggunakan email dan kata sandi via
+                <code class="bg-slate-200/80 px-1 rounded font-mono text-[10px]"
+                  >createUserWithEmailAndPassword()</code
+                >.
+              </p>
+            </div>
+
+            <div
+              class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2"
+            >
+              <div
+                class="flex items-center gap-2 text-emerald-600 font-bold text-xs"
+              >
+                <i class="ri-login-box-line text-base"></i>
+                <span>Login (Sign In)</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Verifikasi identitas pengguna via
+                <code class="bg-slate-200/80 px-1 rounded font-mono text-[10px]"
+                  >signInWithEmailAndPassword()</code
+                >
+                untuk memperoleh token otorisasi.
+              </p>
+            </div>
+
+            <div
+              class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2"
+            >
+              <div
+                class="flex items-center gap-2 text-rose-600 font-bold text-xs"
+              >
+                <i class="ri-shield-user-line text-base"></i>
+                <span>State Observer</span>
+              </div>
+              <p class="text-[11px] text-slate-600 leading-normal">
+                Memantau status sesi login secara realtime via
+                <code class="bg-slate-200/80 px-1 rounded font-mono text-[10px]"
+                  >onAuthStateChanged()</code
+                >
+                untuk proteksi halaman web.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 2: SIMULATOR INTERAKTIF AUTHENTICATION -->
+        <section
+          class="rounded-2xl border border-slate-200 p-5 shadow-xs bg-white space-y-4"
+        >
+          <div
+            class="flex items-center justify-between border-b border-slate-200 pb-3"
+          >
+            <div class="flex items-center gap-2">
+              <i class="ri-shield-keyhole-line text-indigo-600 text-lg"></i>
+              <h3 class="font-display font-bold text-base text-slate-900">
+                2. Simulator Interaktif Firebase Auth & Proteksi Akses
+              </h3>
+            </div>
+            <span
+              id="authStateBadge"
+              class="text-[10px] font-mono bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-full font-semibold"
+            >
+              <i class="ri-lock-line"></i> Unauthenticated
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Form Login/Register -->
+            <div
+              class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3"
+            >
+              <div
+                class="flex justify-between items-center border-b border-slate-200 pb-2"
+              >
+                <span
+                  id="formTitle"
+                  class="font-display font-bold text-xs text-slate-800"
+                >
+                  Form Login Pengguna
+                </span>
+                <button
+                  id="toggleFormBtn"
+                  class="text-[10px] text-indigo-600 font-semibold hover:underline"
+                >
+                  Belum punya akun? Register
+                </button>
+              </div>
+
+              <div class="space-y-2">
+                <div>
+                  <label
+                    class="block text-[10px] font-mono font-medium text-slate-600 mb-1"
+                    >EMAIL</label
+                  >
+                  <input
+                    type="email"
+                    id="simEmail"
+                    placeholder="operator@smk-smti.sch.id"
+                    value="operator@smk-smti.sch.id"
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-[10px] font-mono font-medium text-slate-600 mb-1"
+                    >PASSWORD</label
+                  >
+                  <input
+                    type="password"
+                    id="simPassword"
+                    value="smti123456"
+                    class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div class="pt-2 flex gap-2">
+                <button
+                  id="btnAuthSubmit"
+                  class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg shadow-2xs transition flex items-center justify-center gap-1.5"
+                >
+                  <i class="ri-login-circle-line"></i>
+                  <span id="btnAuthText">Masuk (Sign In)</span>
+                </button>
+                <button
+                  id="btnLogout"
+                  disabled
+                  class="px-3 py-2 bg-slate-200 text-slate-400 text-xs font-semibold rounded-lg transition cursor-not-allowed flex items-center gap-1"
+                >
+                  <i class="ri-logout-box-r-line"></i> Keluar
+                </button>
+              </div>
+            </div>
+
+            <!-- Panel Proteksi Dashboard IoT -->
+            <div
+              id="protectedPanel"
+              class="bg-slate-100 border border-slate-200 rounded-xl p-4 flex flex-col justify-between relative overflow-hidden"
+            >
+              <div
+                id="lockOverlay"
+                class="absolute inset-0 bg-slate-900/40 backdrop-blur-xs z-10 flex flex-col items-center justify-center text-white p-4 text-center"
+              >
+                <i class="ri-lock-2-fill text-3xl text-rose-400 mb-1"></i>
+                <p class="font-display font-bold text-xs">Akses Ditolak</p>
+                <p class="text-[10px] text-slate-200 mt-1 max-w-xs">
+                  Silakan login terlebih dahulu untuk mengakses Panel Kontrol
+                  IoT & Monitoring Realtime.
+                </p>
+              </div>
+
+              <div>
+                <div
+                  class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200"
+                >
+                  <span class="font-mono text-xs font-bold text-slate-800">
+                    <i class="ri-dashboard-2-line text-indigo-600"></i>
+                    Protected Control Panel
+                  </span>
+                  <span
+                    class="text-[9px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold"
+                  >
+                    UID: <span id="userUidDisplay">AUTH_ACTIVE</span>
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div
+                    class="bg-white p-2.5 rounded-lg border border-slate-200"
+                  >
+                    <span class="text-[9px] font-mono text-slate-500 block"
+                      >STATUS SENSOR</span
+                    >
+                    <span
+                      class="text-xs font-mono font-bold text-emerald-600 flex items-center gap-1 mt-0.5"
+                    >
+                      <span
+                        class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"
+                      ></span>
+                      Normal (26.5 °C)
+                    </span>
+                  </div>
+                  <div
+                    class="bg-white p-2.5 rounded-lg border border-slate-200"
+                  >
+                    <span class="text-[9px] font-mono text-slate-500 block"
+                      >KONTROL RELAY</span
+                    >
+                    <button
+                      class="mt-1 px-2.5 py-1 bg-indigo-600 text-white rounded text-[10px] font-mono font-bold hover:bg-indigo-700"
+                    >
+                      TOGGLE RELAY
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="text-[10px] font-mono text-slate-500 border-t border-slate-200 pt-2"
+              >
+                User Email:
+                <span
+                  id="userEmailDisplay"
+                  class="text-indigo-600 font-semibold"
+                  >-</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Console Terminal Log -->
+          <div class="pt-2 border-t border-slate-200">
+            <div
+              class="flex justify-between items-center mb-1 text-[10px] font-mono text-slate-500"
+            >
+              <span class="font-medium flex items-center gap-1 text-slate-700">
+                <i class="ri-terminal-box-line text-indigo-600"></i> Firebase
+                Auth Event Log:
+              </span>
+              <button id="clearAuthLog" class="hover:underline">
+                Clear Log
+              </button>
+            </div>
+            <div
+              id="authConsoleLog"
+              class="bg-slate-100 border border-slate-200 rounded-lg p-2.5 font-mono text-[10px] text-slate-800 h-20 overflow-y-auto space-y-1"
+            >
+              <p class="text-slate-500">
+                [System] Inisialisasi Firebase Authentication Ready.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 3: KODE PROGRAM INTEGRASI -->
+        <section
+          class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4"
+        >
+          <div
+            class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3"
+          >
+            <div class="flex items-center gap-2">
+              <i class="ri-code-box-fill text-indigo-600 text-xl"></i>
+              <h2 class="font-display font-bold text-lg text-slate-900">
+                3. Implementasi Kode Program (`auth.js`)
+              </h2>
+            </div>
+            <button
+              onclick="copyAuthCode()"
+              class="hover:bg-indigo-50 bg-slate-100 text-indigo-700 border-indigo-200 hover:border-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center gap-1 transition shadow-sm"
+            >
+              <i class="ri-file-copy-line text-indigo-600"></i> Salin Kode Auth
+            </button>
+          </div>
+
+          <!-- EDITOR CODE -->
+          <div
+            class="bg-slate-50 rounded-xl border border-slate-300 overflow-hidden shadow-sm"
+          >
+            <div
+              class="bg-slate-200/80 px-4 py-2.5 border-b border-slate-300 flex items-center justify-between text-xs text-slate-700 font-mono"
+            >
+              <div class="flex items-center gap-2">
+                <span
+                  class="w-3 h-3 rounded-full bg-rose-400 inline-block"
+                ></span>
+                <span
+                  class="w-3 h-3 rounded-full bg-amber-400 inline-block"
+                ></span>
+                <span
+                  class="w-3 h-3 rounded-full bg-emerald-400 inline-block"
+                ></span>
+                <span class="ml-2 font-bold text-slate-800"
+                  >index.html (Firebase Auth Module)</span
+                >
+              </div>
+            </div>
+
+            <div class="p-3 space-y-2 bg-slate-50">
+              <!-- BLOK 1: INSIALISASI AUTH -->
+              <div
+                class="code-block-item active-block p-3 rounded-lg bg-white border border-slate-200"
+              >
+                <div
+                  class="text-[11px] font-mono font-bold text-indigo-700 mb-1.5"
+                >
+                  // 1. Import Modul Authentication
+                </div>
+                <pre
+                  class="code-block-text text-slate-800"
+                ><span class="text-purple-700 font-bold">import</span> { initializeApp } <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"</span>;
+<span class="text-purple-700 font-bold">import</span> { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged 
+} <span class="text-purple-700 font-bold">from</span> <span class="text-emerald-700 font-semibold">"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"</span>;
+
+<span class="text-slate-500">// Konfigurasi Proyek Firebase Anda</span>
+<span class="text-purple-700 font-bold">const</span> firebaseConfig = {
+  apiKey: <span class="text-emerald-700 font-semibold">"AIzaSy..."</span>,
+  authDomain: <span class="text-emerald-700 font-semibold">"latihaniot.firebaseapp.com"</span>,
+  projectId: <span class="text-emerald-700 font-semibold">"latihaniot"</span>
+};
+
+<span class="text-purple-700 font-bold">const</span> app = initializeApp(firebaseConfig);
+<span class="text-purple-700 font-bold">const</span> auth = getAuth(app);</pre>
+              </div>
+
+              <!-- BLOK 2: EVENT LOGIN & REGISTER -->
+              <div
+                class="code-block-item p-3 rounded-lg bg-white border border-slate-200"
+              >
+                <div
+                  class="text-[11px] font-mono font-bold text-amber-700 mb-1.5"
+                >
+                  // 2. Fungsi Login dan Register
+                </div>
+                <pre
+                  class="code-block-text text-slate-800"
+                ><span class="text-slate-500">// Fungsi Login</span>
+<span class="text-purple-700 font-bold">async function</span> loginUser(email, password) {
+  <span class="text-purple-700 font-bold">try</span> {
+    <span class="text-purple-700 font-bold">const</span> userCredential = <span class="text-purple-700 font-bold">await</span> signInWithEmailAndPassword(auth, email, password);
+    console.log(<span class="text-emerald-700 font-semibold">"Login Berhasil:"</span>, userCredential.user.email);
+  } <span class="text-purple-700 font-bold">catch</span> (error) {
+    alert(<span class="text-emerald-700 font-semibold">"Gagal Login: "</span> + error.message);
+  }
+}
+
+<span class="text-slate-500">// Memantau Status Sesi Pengguna</span>
+onAuthStateChanged(auth, (user) => {
+  <span class="text-purple-700 font-bold">if</span> (user) {
+    <span class="text-slate-500">// Pengguna terautentikasi -> Tampilkan Dashboard</span>
+    document.getElementById(<span class="text-emerald-700 font-semibold">"protectedPanel"</span>).classList.remove(<span class="text-emerald-700 font-semibold">"hidden"</span>);
+  } <span class="text-purple-700 font-bold">else</span> {
+    <span class="text-slate-500">// Pengguna belum login -> Sembunyikan Dashboard</span>
+    document.getElementById(<span class="text-emerald-700 font-semibold">"protectedPanel"</span>).classList.add(<span class="text-emerald-700 font-semibold">"hidden"</span>);
+  }
+});</pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CARD 4: UPDATE ATURAN KEAMANAN DATABASE -->
+        <section
+          class="bg-amber-50/80 border border-amber-200 rounded-2xl p-6 space-y-4"
+        >
+          <div
+            class="flex items-center gap-2 text-amber-900 font-display font-bold text-base"
+          >
+            <i class="ri-shield-check-fill text-xl text-amber-600"></i>
+            <span
+              >Aturan Keamanan Realtime Database Terautentikasi (Security
+              Rules)</span
+            >
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">
+            Setelah mengaktifkan Firebase Auth, ubah aturan Realtime Database
+            Anda agar hanya pengguna yang berhasil login (<code
+              class="font-mono bg-white px-1.5 py-0.5 rounded border border-amber-300"
+              >auth != null</code
+            >) yang dapat membaca dan menulis data sensor.
+          </p>
+
+          <div
+            class="bg-white border border-amber-200 rounded-xl p-4 font-mono text-xs text-slate-800"
+          >
+            <span class="text-slate-400"
+              >// Rules dengan Pembatasan Autentikasi Pengguna:</span
+            ><br />
+            {<br />
+            &nbsp;&nbsp;<span class="text-amber-600 font-bold">"rules"</span>:
+            {<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-indigo-600">".read"</span
+            >:
+            <span class="text-emerald-700 font-bold">"auth != null"</span
+            >,<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-indigo-600">".write"</span
+            >: <span class="text-emerald-700 font-bold">"auth != null"</span
+            ><br />
+            &nbsp;&nbsp;}<br />
+            }
+          </div>
+        </section>
+      </div>
+
+      <!-- NAVIGATION FOOTER -->
+      <div
+        class="mt-8 flex items-center justify-between pt-4 border-t border-slate-200/80"
+      >
+        <a
+          href="7.1.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition flex items-center gap-1 text-slate-600 shadow-2xs"
+        >
+          <i class="ri-arrow-left-line"></i> Modul 07
+        </a>
+        <a
+          href="index.html"
+          class="text-xs font-semibold px-3.5 py-2 rounded-lg border text-white bg-indigo-600 hover:bg-indigo-700 transition flex items-center gap-1 shadow-2xs"
+        >
+          <i class="ri-home-4-line"></i> Kembali ke Beranda
+        </a>
+      </div>
+    </main>
+
+    <!-- SCRIPT SIMULATOR -->
+    <script>
+      let isRegisterMode = false;
+      let currentUser = null;
+
+      const formTitle = document.getElementById("formTitle");
+      const toggleFormBtn = document.getElementById("toggleFormBtn");
+      const btnAuthSubmit = document.getElementById("btnAuthSubmit");
+      const btnAuthText = document.getElementById("btnAuthText");
+      const btnLogout = document.getElementById("btnLogout");
+
+      const simEmail = document.getElementById("simEmail");
+      const simPassword = document.getElementById("simPassword");
+
+      const authStateBadge = document.getElementById("authStateBadge");
+      const lockOverlay = document.getElementById("lockOverlay");
+      const userEmailDisplay = document.getElementById("userEmailDisplay");
+      const userUidDisplay = document.getElementById("userUidDisplay");
+      const authConsoleLog = document.getElementById("authConsoleLog");
+
+      function addAuthLog(msg, colorClass = "text-slate-700") {
+        const time = new Date().toLocaleTimeString("id-ID");
+        const p = document.createElement("p");
+        p.className = colorClass;
+        p.textContent = `[${time}] ${msg}`;
+        authConsoleLog.appendChild(p);
+        authConsoleLog.scrollTop = authConsoleLog.scrollHeight;
+      }
+
+      document.getElementById("clearAuthLog").addEventListener("click", () => {
+        authConsoleLog.innerHTML =
+          '<p class="text-slate-500">[System] Log dibersihkan.</p>';
+      });
+
+      toggleFormBtn.addEventListener("click", () => {
+        isRegisterMode = !isRegisterMode;
+        if (isRegisterMode) {
+          formTitle.textContent = "Form Registrasi Akun Baru";
+          btnAuthText.textContent = "Daftar (Sign Up)";
+          toggleFormBtn.textContent = "Sudah punya akun? Login";
+        } else {
+          formTitle.textContent = "Form Login Pengguna";
+          btnAuthText.textContent = "Masuk (Sign In)";
+          toggleFormBtn.textContent = "Belum punya akun? Register";
+        }
+      });
+
+      btnAuthSubmit.addEventListener("click", () => {
+        const email = simEmail.value.trim();
+        const pwd = simPassword.value.trim();
+
+        if (!email || !pwd) {
+          addAuthLog(
+            "Error: Email dan password tidak boleh kosong!",
+            "text-rose-600 font-bold",
+          );
+          return;
+        }
+
+        if (isRegisterMode) {
+          addAuthLog(
+            `[Auth] Registrasi sukses untuk ${email}`,
+            "text-indigo-600 font-medium",
+          );
+          alert("Akun berhasil dibuat! Silakan klik Masuk (Sign In).");
+          toggleFormBtn.click();
+        } else {
+          const fakeUid = "usr_" + Math.random().toString(36).substring(2, 9);
+          currentUser = { email: email, uid: fakeUid };
+
+          addAuthLog(
+            `[Auth] Login Berhasil. User: ${email} (UID: ${fakeUid})`,
+            "text-emerald-700 font-bold",
+          );
+          updateAuthUI(true);
+        }
+      });
+
+      btnLogout.addEventListener("click", () => {
+        addAuthLog(
+          `[Auth] User ${currentUser?.email || ""} telah Logout.`,
+          "text-slate-600 font-medium",
+        );
+        currentUser = null;
+        updateAuthUI(false);
+      });
+
+      function updateAuthUI(isAuthenticated) {
+        if (isAuthenticated) {
+          authStateBadge.className =
+            "text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full font-bold";
+          authStateBadge.innerHTML =
+            '<i class="ri-checkbox-circle-line"></i> Authenticated';
+
+          lockOverlay.classList.add("hidden");
+          userEmailDisplay.textContent = currentUser.email;
+          userUidDisplay.textContent = currentUser.uid;
+
+          btnLogout.disabled = false;
+          btnLogout.className =
+            "px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition cursor-pointer flex items-center gap-1";
+          btnAuthSubmit.disabled = true;
+          btnAuthSubmit.classList.add("opacity-50", "cursor-not-allowed");
+        } else {
+          authStateBadge.className =
+            "text-[10px] font-mono bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-full font-semibold";
+          authStateBadge.innerHTML =
+            '<i class="ri-lock-line"></i> Unauthenticated';
+
+          lockOverlay.classList.remove("hidden");
+          userEmailDisplay.textContent = "-";
+          userUidDisplay.textContent = "AUTH_ACTIVE";
+
+          btnLogout.disabled = true;
+          btnLogout.className =
+            "px-3 py-2 bg-slate-200 text-slate-400 text-xs font-semibold rounded-lg transition cursor-not-allowed flex items-center gap-1";
+          btnAuthSubmit.disabled = false;
+          btnAuthSubmit.classList.remove("opacity-50", "cursor-not-allowed");
+        }
+      }
+
+      function copyAuthCode() {
+        const sampleCode = `import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);`;
+
+        navigator.clipboard.writeText(sampleCode);
+        alert("Kode program autentikasi berhasil disalin!");
+      }
+    </script>
+  </body>
+</html>
